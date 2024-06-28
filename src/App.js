@@ -1,8 +1,9 @@
 import './App.css';
 
 import { useState } from "react";
-import { functions } from "./firebase";
-import { httpsCallable } from "firebase/functions";
+
+import { collection, addDoc } from "firebase/firestore";
+import { db } from './firebase';
 
 function App() {
   const [name, setName] = useState(""); // State to hold the input value
@@ -10,15 +11,12 @@ function App() {
 
   const handleAddUser = async () => {
     try {
-      const addUserFunction = httpsCallable(functions, "addUser");
-      const result = await addUserFunction({ name });
+      const docRef = await addDoc(collection(db, "users"), {
+        name: name,
+      });
+      setName(""); // Clear the name field on successful addition
+      setResponse(docRef.id);
 
-      if (result.data.success) {
-        setResponse(result.data.message);
-        setName(""); // Clear the name field on successful addition
-      } else {
-        setResponse("Failed to add user.");
-      }
     } catch (error) {
       setResponse("An error occurred.");
       console.error(
