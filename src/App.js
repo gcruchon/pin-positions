@@ -1,51 +1,70 @@
-import './App.css';
+import { useState, useEffect } from 'react';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
 
-import { useState } from "react";
-
-import { collection, addDoc } from "firebase/firestore";
+import { Round } from './components/Round'
+import { collection, where, query, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
 
-function App() {
-  const [name, setName] = useState(""); // State to hold the input value
-  const [response, setResponse] = useState(""); // State to hold the response message
 
-  const handleAddUser = async () => {
-    try {
-      const docRef = await addDoc(collection(db, "users"), {
-        name: name,
-      });
-      setName(""); // Clear the name field on successful addition
-      setResponse(docRef.id);
+import './App.css';
 
-    } catch (error) {
-      setResponse("An error occurred.");
-      console.error(
-        "There was an error calling the addUser Firebase function",
-        error
-      );
+const App = () => {
+
+  const eventId = "testEvent";
+
+  const [displayedRound, setDisplayedRound] = useState(1);
+  const [holes, setHoles] = useState([]);
+
+  const getActiveClass = (round) => {
+    if (displayedRound === round) {
+      return "active font-weight-bold"
     }
-  };
+    return "";
+  }
+  useEffect(() => {
+    const holesRef = collection(db, "holes");
+    const q = query(holesRef, where("eventId", "==", eventId));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      let holes = {};
+      querySnapshot.forEach((doc) => {
+        holes[doc.id] = doc.data();
+      });
+      setHoles(holes);
+      console.log("holes", holes);
+    });
+  }, [])
 
   return (
-    <div className="container">
+    <Container>
       <h1>
         Pin positions
       </h1>
+      <Nav variant="tabs" defaultActiveKey="/home">
+        <Nav.Item>
+          <Nav.Link className={getActiveClass(1)} onClick={() => setDisplayedRound(1)}>Round N°1</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link className={getActiveClass(2)} onClick={() => setDisplayedRound(2)}>Round N°2</Nav.Link>
+        </Nav.Item>
+      </Nav>
 
-      <div className="user-input-section">
-        <input
-          type="text"
-          placeholder="Enter name..."
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <button onClick={handleAddUser} disabled={!name.trim()}>
-          Add User
-        </button>
-      </div>
+      <Round
+        eventId={eventId}
+        round={1} 
+        roundDate={new Date()} 
+        dotColor={"red"} 
+        isVisible={displayedRound === 1} 
+        holes={holes} />
+      <Round 
+        eventId={eventId} 
+        round={2} 
+        roundDate={new Date()} 
+        dotColor={"white"} 
+        isVisible={displayedRound === 2} 
+        holes={holes} />
 
-      <div className="alert alert-primary" role="alert">{response}</div>
-    </div >
+    </Container>
   );
 }
 
