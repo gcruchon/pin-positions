@@ -8,6 +8,7 @@ import Container from 'react-bootstrap/Container';
 import { Welcome } from './components/Welcome'
 import { Event } from './components/Event'
 import './App.css';
+import { EventDetails } from './components/EventDetails';
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "/events/:eventId",
     element: <Event />,
+  },
+  {
+    path: "/events/:eventId/details",
+    element: <EventDetails />,
   },
 ]);
 
