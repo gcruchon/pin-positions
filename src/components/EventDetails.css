@@ -1,0 +1,7 @@
+.EventDetails-owner span {
+  background-color: var(--bs-primary-bg-subtle);
+  border-color: var(--bs-primary-border-subtle);
+}
+.EventDetails-owner input {
+  border-color: var(--bs-primary-border-subtle);
+}

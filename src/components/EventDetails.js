@@ -1,89 +1,184 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
+import Badge from 'react-bootstrap/Badge'
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import ListGroup from 'react-bootstrap/ListGroup';
 import Row from 'react-bootstrap/Row';
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 
 import { db } from '../firebase';
-import { getLocalDateFromDb, getDbDateFromLocalDate } from '../utils';
+import { getLocalDateFromDb, getDbDateFromLocalDate, validateEmail } from '../utils';
+import './EventDetails.css';
 
 export const EventDetails = () => {
     const { eventId } = useParams();
 
     const [eventData, setEventData] = useState({});
     const [eventPageStatus, setEventPageStatus] = useState("syncing");
+    const [newOwnerEmail, setNewOwnerEmail] = useState("");
+    const [newEditorEmail, setNewEditorEmail] = useState("");
     const [showToast, setShowToast] = useState(false);
 
 
-    const addRound = () => {
-        let { dateStart, name, rounds } = eventData;
+    const addRound = async () => {
+        let { dateStart, rounds } = eventData;
         let nextRoundDate = getLocalDateFromDb(dateStart);
 
         if (rounds && rounds.length) {
             const oneDay = 24 * 60 * 60 * 1000;
             nextRoundDate.setTime(getLocalDateFromDb(rounds[rounds.length - 1].date).getTime() + oneDay);
-            console.log("nextRoundDate", nextRoundDate);
         } else {
             rounds = [];
         }
-        const newEventData = {
-            name,
-            dateStart,
-            rounds: [...rounds, { date: getDbDateFromLocalDate(nextRoundDate), dotColor: "white" }]
-        }
-        setEventData(newEventData);
+        const udpdatedFragment = { updated: serverTimestamp() };
+        udpdatedFragment["rounds"] = [...rounds, { date: getDbDateFromLocalDate(nextRoundDate), dotColor: "white" }];
+        await updateEvent(udpdatedFragment);
     }
 
-    const removeRound = (roundIndex) => {
-        const { dateStart, name, rounds } = eventData;
+    const removeRound = async (roundIndex) => {
+        const { rounds } = eventData;
         rounds.splice(roundIndex - 1, 1);
-        const newEventData = {
-            name,
-            dateStart,
-            rounds,
-        }
-        setEventData(newEventData);
+        const udpdatedFragment = { updated: serverTimestamp(), rounds };
+        await updateEvent(udpdatedFragment);
     };
 
-    const saveEvent = async () => {
+    const saveRoundField = async (newValue, field, roundIndex) => {
+        const { rounds } = eventData;
+        console.log("rounds", rounds);
+        const i = roundIndex - 1;
+        const round = rounds[i];
+        console.log("round avant", round);
+
+        round[field] = newValue;
+        console.log("round après", round);
+        rounds.splice(i, 1, round);
+        const udpdatedFragment = { updated: serverTimestamp(), rounds };
+        console.log("udpdatedFragment", udpdatedFragment);
+        await updateEvent(udpdatedFragment);
+
+    };
+
+    const saveRoundDate = async (newDate, roundIndex) => {
+        await saveRoundField(newDate, "date", roundIndex);
+    };
+
+    const saveRoundDotColor = async (newDotColor, roundIndex) => {
+        await saveRoundField(newDotColor, "dotColor", roundIndex);
+    };
+
+    const addMember = async (email, field) => {
+        const members = eventData[field] || [];
+        members.push(email);
+        const udpdatedFragment = { updated: serverTimestamp() };
+        udpdatedFragment[field] = members;
+        await updateEvent(udpdatedFragment);
+    }
+
+    const removeMember = async (email, field) => {
+        const members = eventData[field] || [];
+        const udpdatedFragment = { updated: serverTimestamp() };
+        udpdatedFragment[field] = members.filter((memberEmail) => memberEmail !== email);
+        await updateEvent(udpdatedFragment);
+    }
+
+    const addEditor = async () => {
+        if (validateEmail(newEditorEmail)) {
+            await addMember(newEditorEmail, "editors");
+            setNewEditorEmail("");
+        } else {
+            alert(`New editor email is invalid: ${newEditorEmail}`);
+        }
+    }
+
+    const addOwner = async () => {
+        if (validateEmail(newOwnerEmail)) {
+            await addMember(newOwnerEmail, "owners");
+            setNewOwnerEmail("");
+        } else {
+            alert(`New owner email is invalid: ${newOwnerEmail}`);
+        }
+    }
+
+    const removeEditor = async (editorEmail) => {
+        await removeMember(editorEmail, "editors");
+    }
+
+    const removeOwner = async (ownerEmail) => {
+        await removeMember(ownerEmail, "owners");
+    }
+
+    const saveEventName = async (newEventName) => {
+        await updateEvent({ updated: serverTimestamp(), name: newEventName });
+    }
+
+    const saveEventStartDate = async (newEventDbDate) => {
+        await updateEvent({ updated: serverTimestamp(), dateStart: newEventDbDate });
+    }
+
+    const updateEvent = async (updatedFragment) => {
         setShowToast(true);
         const eventRef = doc(db, "events", eventId);
-        const res = await updateDoc(eventRef, { ...eventData, updated: serverTimestamp() });
-        console.log(res)
+        await updateDoc(eventRef, updatedFragment);
         setShowToast(false);
     }
 
+    // useEffect(() => {
+    //     setEventPageStatus("syncing");
+    //     const getEvent = async (eventId) => {
+    //         const eventRef = doc(db, "events", eventId);
+    //         const eventSnap = await getDoc(eventRef);
+    //         if (eventSnap.exists()) {
+    //             setEventData(eventSnap.data());
+    //             setEventPageStatus("event-exists")
+    //         } else {
+    //             setEventPageStatus("not-found")
+    //         }
+    //     }
+    //     getEvent(eventId);
+    // }, [eventId]);
+
+
+
     useEffect(() => {
-        setEventPageStatus("exists");
-        const getEvent = async (eventId) => {
-            const eventRef = doc(db, "events", eventId);
-            const eventSnap = await getDoc(eventRef);
-            if (eventSnap.exists()) {
-                setEventData(eventSnap.data());
+        const eventRef = doc(db, "events", eventId);
+        const unsubscribe = onSnapshot(eventRef, (doc) => {
+            if (doc.data()) {
+                setEventData(doc.data());
                 setEventPageStatus("event-exists")
             } else {
                 setEventPageStatus("not-found")
             }
-        }
-        getEvent(eventId);
+        });
+        return () => unsubscribe();
     }, [eventId]);
 
     return (
         <>
-            <Container show={eventPageStatus === "event-exists"} fluid>
+            <Container className={eventPageStatus === "event-exists" ? "" : "d-none"} fluid>
+                <div className="d-flex flex-row">
+                    <div className="p-2">
+                        <h5>Event details</h5>
+                    </div>
+                    <div className={showToast ? "p-2" : "d-none"}>
+                        [Saving...]
+                    </div>
+                </div>
                 <Form>
-                    <h5>Event details</h5>
                     <Form.Group as={Row} className="mb-3">
                         <Form.Label column sm="2">
                             Name
                         </Form.Label>
                         <Col sm="10">
-                            <Form.Control type="text" placeholder="Name of the event" defaultValue={eventData.name} />
+                            <Form.Control
+                                type="text"
+                                placeholder="Name of the event"
+                                defaultValue={eventData.name || ""}
+                                onBlur={(e) => saveEventName(e.target.value)} />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3">
@@ -91,7 +186,11 @@ export const EventDetails = () => {
                             First day of the event
                         </Form.Label>
                         <Col sm="10">
-                            <Form.Control type="date" placeholder="" defaultValue={eventData.dateStart} />
+                            <Form.Control
+                                type="date"
+                                placeholder=""
+                                value={eventData.dateStart || ""}
+                                onChange={(e) => saveEventStartDate(e.target.value)} />
                         </Col>
                     </Form.Group>
                     <hr />
@@ -113,13 +212,21 @@ export const EventDetails = () => {
                                         <Col>
                                             <InputGroup className="mb-3">
                                                 <InputGroup.Text>Date</InputGroup.Text>
-                                                <Form.Control type="date" defaultValue={round.date} />
+                                                <Form.Control
+                                                    type="date"
+                                                    data-round={roundIndex}
+                                                    defaultValue={round.date}
+                                                    onChange={(e) => saveRoundDate(e.target.value, e.target.dataset.round)} />
                                             </InputGroup>
                                         </Col>
                                         <Col>
                                             <InputGroup className="mb-3">
                                                 <InputGroup.Text>Dot color</InputGroup.Text>
-                                                <Form.Select aria-label="Round color" defaultValue={round.dotColor}>
+                                                <Form.Select
+                                                    aria-label="Round color"
+                                                    data-round={roundIndex}
+                                                    defaultValue={round.dotColor}
+                                                    onChange={(e) => saveRoundDotColor(e.target.value, e.target.dataset.round)}>
                                                     <option value="white">white</option>
                                                     <option value="red">red</option>
                                                     <option value="yellow">yellow</option>
@@ -138,19 +245,73 @@ export const EventDetails = () => {
                             })
                             : ""
                     }
-                    <Row>
-                        <Col>
-                            <Button variant="primary" onClick={() => saveEvent()}>Save event</Button>
-                            {' '}
-                            <Link to={`/events/${eventId}`}>
-                                <Button variant="outline-secondary">Edit pin positions</Button>
-                            </Link>
-                            <Alert show={showToast} variant="light">Saving event...</Alert>
-                        </Col>
-                    </Row>
+                    <hr />
+                    <h5>Autorisations</h5>
+
+                    <ListGroup className="mb-4">
+                        {
+                            eventData.owners
+                                ? eventData.owners.map((ownerEmail, i) => {
+                                    return (<ListGroup.Item variant="primary" key={`owner-${i}`}>
+                                        <Badge bg="primary">owner</Badge>
+                                        {' '}
+                                        {ownerEmail}
+                                        {' '}
+                                        <Button
+                                            variant="outline-primary"
+                                            size="sm"
+                                            data-email={ownerEmail}
+                                            onClick={(e) => removeOwner(e.target.dataset.email)}>Remove</Button>
+                                    </ListGroup.Item>)
+                                })
+                                : ""
+                        }
+                        {
+                            eventData.editors
+                                ? eventData.editors.map((editorEmail, i) => {
+                                    return (<ListGroup.Item variant="light" key={`editor-${i}`}>
+                                        <Badge bg="secondary">editor</Badge>
+                                        {' '}
+                                        {editorEmail}
+                                        {' '}
+                                        <Button
+                                            variant="outline-dark"
+                                            size="sm"
+                                            data-email={editorEmail}
+                                            onClick={(e) => removeEditor(e.target.dataset.email)}>Remove</Button>
+                                    </ListGroup.Item>)
+                                })
+                                : ""
+                        }
+                    </ListGroup>
+                    <InputGroup className="mb-3 EventDetails-owner">
+                        <InputGroup.Text className="">New owner</InputGroup.Text>
+                        <Form.Control
+                            type="email"
+                            placeholder="Owner email"
+                            value={newOwnerEmail}
+                            onChange={(e) => setNewOwnerEmail(e.target.value)}
+                        />
+                        <Button variant="outline-primary" onClick={() => addOwner()}>Add</Button>
+                    </InputGroup>
+                    <InputGroup className="mb-3">
+                        <InputGroup.Text>New editor</InputGroup.Text>
+                        <Form.Control
+                            type="email"
+                            placeholder="Editor email"
+                            value={newEditorEmail}
+                            onChange={(e) => setNewEditorEmail(e.target.value)}
+                        />
+                        <Button variant="outline-secondary" onClick={() => addEditor()}>Add</Button>
+                    </InputGroup>
+                    <Container className="mt-4" fluid>
+                        <Link to={`/events/${eventId}`}>
+                            <Button variant="outline-secondary">Edit pin positions</Button>
+                        </Link>
+                    </Container>
                 </Form>
             </Container>
-            <Alert show={eventPageStatus === "light"} variant="danger">Loading event...</Alert>
+            <Alert show={eventPageStatus === "syncing"} variant="warning">Loading event...</Alert>
             <Alert show={eventPageStatus === "not-found"} variant="danger">Event not found!</Alert>
         </>
     );
