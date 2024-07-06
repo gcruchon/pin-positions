@@ -1,6 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from '../firebase';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup'
+
 import { EventContext } from "./Event";
 import { RoundContext } from "./Round";
 import './Hole.css';
@@ -12,17 +15,18 @@ const DistanceInput = ({ distance, distanceType, saveDistanceToBase }) => {
   }
 
   return (
-    <input
+    <Form.Control
       type="text"
       pattern="[0-9]*"
+      size="3"
       defaultValue={distance}
-      onBlur={(e) => saveDistanceToBase(cleanDistance(initialDistance), e.target.value, distanceType)}
-    />)
+      onBlur={(e) => saveDistanceToBase(cleanDistance(initialDistance), e.target.value, distanceType)} />
+  )
 }
 
 const SideButton = ({ side, handleSide, getSideButtonClassName }) => {
   return (
-    <button type="button" className={getSideButtonClassName(side)} onClick={async () => await handleSide(side)}>&#160;&#160;{side}&#160;&#160;</button>
+    <button type="button" className={getSideButtonClassName(side)} onClick={async () => await handleSide(side)}>&#160;{side}&#160;</button>
   )
 }
 
@@ -53,7 +57,7 @@ export const Hole = ({ hole, value }) => {
   const saveDistanceToBase = async (initialDistance, newDistance, distanceType) => {
     console.log("saveDistanceToBase", initialDistance, newDistance, distanceType);
     if (initialDistance !== newDistance) {
-      switch(distanceType) {
+      switch (distanceType) {
         case "fromFront":
           await saveFieldToBase("distanceFromFront", newDistance);
           break;
@@ -93,21 +97,16 @@ export const Hole = ({ hole, value }) => {
   }, [value]);
 
   return (
-    <div className={`row m-3 Hole-db-${dbState}`}>
-      <div className="col-sm text-right">{hole}</div>
-      <div className="col-sm">
-        <DistanceInput distance={distanceFromFront} distanceType="fromFront" saveDistanceToBase={saveDistanceToBase} />
-      </div>
-      <div className="col-sm">
-        <DistanceInput distance={distanceFromSide} distanceType="fromSide" saveDistanceToBase={saveDistanceToBase} />
-      </div>
-      <div className="col-sm">
-        <div className="btn-group" role="group" aria-label="Choose side">
+    <div className={`mb-4 Hole-db-${dbState}`}>
+        <InputGroup>
+          <InputGroup.Text id="basic-addon2"># {hole}</InputGroup.Text>
+          <DistanceInput distance={distanceFromFront} distanceType="fromFront" saveDistanceToBase={saveDistanceToBase} />
+          <InputGroup.Text id="basic-addon2"> - </InputGroup.Text>
+          <DistanceInput distance={distanceFromSide} distanceType="fromSide" saveDistanceToBase={saveDistanceToBase} />
           <SideButton side={'L'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
           <SideButton side={'C'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
           <SideButton side={'R'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
-        </div>
-      </div>
+        </InputGroup>
     </div>
   );
 }
