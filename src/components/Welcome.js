@@ -3,11 +3,11 @@ export const Welcome = () => {
 
     return (
         <Container>
-            <p>Welcome!</p>
-            <p>Please select an event below:</p>
+            <h1>Welcome!</h1>
+            <p>Please select what you want to do:</p>
             <ul>
                 <li>
-                    <a href="/events/testEvent">Test Event</a>
+                    <a href="/events">See event list</a>
                 </li>
             </ul>
         </Container>

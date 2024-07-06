@@ -1,12 +1,12 @@
 import { createContext, useContext } from 'react';
 import { EventContext } from "./Event";
 import { Hole } from "./Hole";
+import { dateOptions } from '../utils';
 
 export const RoundContext = createContext();
 
 export const Round = ({ round, roundDate, dotColor, isVisible, holes }) => {
     const eventId = useContext(EventContext);
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
     const holeComponents = [];
     for (let i = 1; i <= 18; i++) {

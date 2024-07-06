@@ -7,6 +7,7 @@ import Container from 'react-bootstrap/Container';
 
 import { Welcome } from './components/Welcome'
 import { Event } from './components/Event'
+import { EventList } from './components/EventList'
 import './App.css';
 import { EventDetails } from './components/EventDetails';
 
@@ -14,6 +15,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Welcome />,
+  },
+  {
+    path: "/events",
+    element: <EventList />,
   },
   {
     path: "/events/:eventId",
