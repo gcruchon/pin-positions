@@ -2,8 +2,8 @@ import Container from 'react-bootstrap/Container';
 export const Welcome = () => {
 
     return (
-        <Container>
-            <h1>Welcome!</h1>
+        <Container fluid>
+            <h2>Welcome!</h2>
             <p>Please select what you want to do:</p>
             <ul>
                 <li>
