@@ -50,7 +50,6 @@ export const Event = () => {
                     holes[doc.id] = doc.data();
                 });
                 setHoles(holes);
-                console.log("holes", holes);
             });
             return () => unsubscribe();
         }
@@ -58,7 +57,7 @@ export const Event = () => {
 
     return (
         <EventContext.Provider value={eventId}>
-            <Container show={eventPageStatus === "event-exists"} fluid >
+            <Container className={eventPageStatus === "event-exists" ? "" : "d-none"} fluid >
                 <h2>
                     {eventData.name}
                     {' '}

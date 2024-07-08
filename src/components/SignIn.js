@@ -1,18 +1,9 @@
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
-import { signInWithPopup } from "firebase/auth";
-
-import { provider, auth } from '../firebase';
+import { useAuth } from '../hooks';
 
 export const SignIn = () => {
-    const signIn = () => {
-        signInWithPopup(auth, provider)
-            .then(() => {
-            }).catch((error) => {
-                // Handle Errors here.
-                console.log(error);
-            });
-    }
+    const { signIn } = useAuth();
     return (
         <Container>
             <p>Please sign-in with your Google account:</p>

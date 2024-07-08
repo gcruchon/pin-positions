@@ -1,38 +1,36 @@
-import { useContext } from 'react';
-import { signOut } from "firebase/auth";
+import { NavLink } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 
-import { AppContext } from '../App';
-
-import { auth } from '../firebase';
 import './Header.css';
+import { useAuth } from '../hooks';
 
 export const Header = () => {
-    const currentUser = useContext(AppContext);
-
-    const signOutFromApp = () => {
-        signOut(auth).then(() => {
-            // Sign-out successful.
-        }).catch((error) => {
-            // An error happened.
-        });
-    }
+    const { currentUser, signOutFromApp, signIn } = useAuth();
 
     return (
         <Container fluid className="Header d-flex pt-3 pb-1 mb-3">
             <h1>
                 Pin positions
             </h1>
-            
+            <nav className="pt-2 ps-3">
+                <NavLink to="/">Home</NavLink>
+                {' - '}
+                <NavLink to="/events">Event list</NavLink>
+            </nav>
             {
                 currentUser
                     ? (
                         <div className="ms-auto text-end">
                             <span className="pe-3">{currentUser.displayName}</span>
                             <Button onClick={signOutFromApp} size="sm" variant="outline-primary">Sign out</Button>
-                        </div>)
-                    : ""
+                        </div>
+                    )
+                    : (
+                        <div className="ms-auto text-end">
+                            <Button onClick={signIn} size="sm" variant="outline-primary">Sign in</Button>
+                        </div>
+                    )
             }
         </Container>
     );

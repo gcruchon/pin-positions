@@ -127,23 +127,6 @@ export const EventDetails = () => {
         setShowToast(false);
     }
 
-    // useEffect(() => {
-    //     setEventPageStatus("syncing");
-    //     const getEvent = async (eventId) => {
-    //         const eventRef = doc(db, "events", eventId);
-    //         const eventSnap = await getDoc(eventRef);
-    //         if (eventSnap.exists()) {
-    //             setEventData(eventSnap.data());
-    //             setEventPageStatus("event-exists")
-    //         } else {
-    //             setEventPageStatus("not-found")
-    //         }
-    //     }
-    //     getEvent(eventId);
-    // }, [eventId]);
-
-
-
     useEffect(() => {
         const eventRef = doc(db, "events", eventId);
         const unsubscribe = onSnapshot(eventRef, (doc) => {
