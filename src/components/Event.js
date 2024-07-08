@@ -44,13 +44,17 @@ export const Event = () => {
         if (eventPageStatus === "event-exists") {
             const holesRef = collection(db, "holes");
             const q = query(holesRef, where("eventId", "==", eventId));
-            const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                let holes = {};
-                querySnapshot.forEach((doc) => {
-                    holes[doc.id] = doc.data();
+            const unsubscribe = onSnapshot(q,
+                (querySnapshot) => {
+                    let holes = {};
+                    querySnapshot.forEach((doc) => {
+                        holes[doc.id] = doc.data();
+                    });
+                    setHoles(holes);
+                },
+                (error) => {
+                    console.error(error);
                 });
-                setHoles(holes);
-            });
             return () => unsubscribe();
         }
     }, [eventId, eventPageStatus]);

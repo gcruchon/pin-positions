@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react";
-import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, serverTimestamp, runTransaction } from "firebase/firestore";
 import { db } from '../firebase';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup'
 
 import { EventContext } from "./Event";
 import { RoundContext } from "./Round";
+import { useAuth } from '../hooks';
 import './Hole.css';
 
 const DistanceInput = ({ distance, distanceType, saveDistanceToBase }) => {
@@ -33,6 +34,7 @@ const SideButton = ({ side, handleSide, getSideButtonClassName }) => {
 export const Hole = ({ hole, value }) => {
   const eventId = useContext(EventContext);
   const round = useContext(RoundContext);
+  const { currentUser } = useAuth();
 
   const [distanceFromFront, setDistanceFromFront] = useState("");
   const [distanceFromSide, setDistanceFromSide] = useState("");
@@ -72,19 +74,35 @@ export const Hole = ({ hole, value }) => {
     setDbState("saving");
     const holeData = {}
     holeData[fieldId] = fieldValue;
-    holeData["updated"] = serverTimestamp();
 
     const holeRef = doc(db, "holes", `${eventId}|${round}|${hole}`);
-    const holeSnapshot = await getDoc(holeRef);
-    if (holeSnapshot.exists()) {
-      await updateDoc(holeRef, holeData);
-    } else {
-      holeData["eventId"] = eventId;
-      holeData["round"] = round;
-      holeData["hole"] = hole;
-      holeData["created"] = serverTimestamp();
-      await setDoc(holeRef, holeData);
-    }
+    await runTransaction(db, async (transaction) => {
+      const holeDoc = await transaction.get(holeRef);
+      if (holeDoc.exists()) {
+        const previousVersionOfHole = holeDoc.data();
+        const currentVersion = previousVersionOfHole.version || 1;
+        const historyRef = doc(
+          db,
+          "holes",
+          `${eventId}|${round}|${hole}`,
+          "history",
+          `${eventId}|${round}|${hole}-v${currentVersion}`)
+        holeData["version"] = currentVersion + 1;
+        holeData["updated"] = serverTimestamp();
+        holeData["updatedBy"] = currentUser.email;
+        transaction.set(historyRef, previousVersionOfHole);
+        transaction.update(holeRef, holeData);
+
+      } else {
+        holeData["eventId"] = eventId;
+        holeData["round"] = round;
+        holeData["hole"] = hole;
+        holeData["created"] = serverTimestamp();
+        holeData["createdBy"] = currentUser.email;
+        holeData["version"] = 1;
+        transaction.set(holeRef, holeData);
+      }
+    });
   };
 
   useEffect(() => {
@@ -96,15 +114,15 @@ export const Hole = ({ hole, value }) => {
 
   return (
     <div className={`mb-4 Hole-db-${dbState}`}>
-        <InputGroup>
-          <InputGroup.Text id="basic-addon2"># {hole}</InputGroup.Text>
-          <DistanceInput distance={distanceFromFront} distanceType="fromFront" saveDistanceToBase={saveDistanceToBase} />
-          <InputGroup.Text id="basic-addon2"> - </InputGroup.Text>
-          <DistanceInput distance={distanceFromSide} distanceType="fromSide" saveDistanceToBase={saveDistanceToBase} />
-          <SideButton side={'L'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
-          <SideButton side={'C'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
-          <SideButton side={'R'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
-        </InputGroup>
+      <InputGroup>
+        <InputGroup.Text id="basic-addon2"># {hole}</InputGroup.Text>
+        <DistanceInput distance={distanceFromFront} distanceType="fromFront" saveDistanceToBase={saveDistanceToBase} />
+        <InputGroup.Text id="basic-addon2"> - </InputGroup.Text>
+        <DistanceInput distance={distanceFromSide} distanceType="fromSide" saveDistanceToBase={saveDistanceToBase} />
+        <SideButton side={'L'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
+        <SideButton side={'C'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
+        <SideButton side={'R'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
+      </InputGroup>
     </div>
   );
 }

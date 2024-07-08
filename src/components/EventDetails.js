@@ -12,11 +12,13 @@ import Row from 'react-bootstrap/Row';
 import { doc, updateDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 
 import { db } from '../firebase';
+import { useAuth } from '../hooks';
 import { getLocalDateFromDb, getDbDateFromLocalDate, validateEmail } from '../utils';
 import './EventDetails.css';
 
 export const EventDetails = () => {
     const { eventId } = useParams();
+    const { currentUser } = useAuth();
 
     const [eventData, setEventData] = useState({});
     const [eventPageStatus, setEventPageStatus] = useState("syncing");
@@ -35,7 +37,7 @@ export const EventDetails = () => {
         } else {
             rounds = [];
         }
-        const udpdatedFragment = { updated: serverTimestamp() };
+        const udpdatedFragment = {};
         udpdatedFragment["rounds"] = [...rounds, { date: getDbDateFromLocalDate(nextRoundDate), dotColor: "white" }];
         await updateEvent(udpdatedFragment);
     }
@@ -43,7 +45,7 @@ export const EventDetails = () => {
     const removeRound = async (roundIndex) => {
         const { rounds } = eventData;
         rounds.splice(roundIndex - 1, 1);
-        const udpdatedFragment = { updated: serverTimestamp(), rounds };
+        const udpdatedFragment = { rounds };
         await updateEvent(udpdatedFragment);
     };
 
@@ -54,7 +56,7 @@ export const EventDetails = () => {
 
         round[field] = newValue;
         rounds.splice(i, 1, round);
-        const udpdatedFragment = { updated: serverTimestamp(), rounds };
+        const udpdatedFragment = { rounds };
         await updateEvent(udpdatedFragment);
 
     };
@@ -70,14 +72,14 @@ export const EventDetails = () => {
     const addMember = async (email, field) => {
         const members = eventData[field] || [];
         members.push(email);
-        const udpdatedFragment = { updated: serverTimestamp() };
+        const udpdatedFragment = {};
         udpdatedFragment[field] = members;
         await updateEvent(udpdatedFragment);
     }
 
     const removeMember = async (email, field) => {
         const members = eventData[field] || [];
-        const udpdatedFragment = { updated: serverTimestamp() };
+        const udpdatedFragment = {};
         udpdatedFragment[field] = members.filter((memberEmail) => memberEmail !== email);
         await updateEvent(udpdatedFragment);
     }
@@ -109,16 +111,18 @@ export const EventDetails = () => {
     }
 
     const saveEventName = async (newEventName) => {
-        await updateEvent({ updated: serverTimestamp(), name: newEventName });
+        await updateEvent({ name: newEventName });
     }
 
     const saveEventStartDate = async (newEventDbDate) => {
-        await updateEvent({ updated: serverTimestamp(), dateStart: newEventDbDate });
+        await updateEvent({ dateStart: newEventDbDate });
     }
 
     const updateEvent = async (updatedFragment) => {
         setShowToast(true);
         const eventRef = doc(db, "events", eventId);
+        updatedFragment["updated"] = serverTimestamp();
+        updatedFragment["updatedBy"] = currentUser.email;
         await updateDoc(eventRef, updatedFragment);
         setShowToast(false);
     }
