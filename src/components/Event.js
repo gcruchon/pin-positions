@@ -62,7 +62,7 @@ export const Event = () => {
                     {eventData.name}
                     {' '}
                     <Link to={`/events/${eventId}/details`}>
-                        <Button variant="outline-primary" size="sm">Edit round</Button>
+                        <Button variant="outline-primary" size="sm" className="ms-2">Edit event</Button>
                     </Link>
                 </h2>
                 <Nav variant="tabs" defaultActiveKey="/">

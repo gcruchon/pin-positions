@@ -3,6 +3,8 @@ import { EventContext } from "./Event";
 import { Hole } from "./Hole";
 import { dateOptions } from '../utils';
 
+import './Round.css'
+
 export const RoundContext = createContext();
 
 export const Round = ({ round, roundDate, dotColor, isVisible, holes }) => {
@@ -19,7 +21,14 @@ export const Round = ({ round, roundDate, dotColor, isVisible, holes }) => {
     return (
         <RoundContext.Provider value={round}>
             <div className={visibilityClass}>
-                <p>Date: {roundDate.toLocaleDateString("en-GB", dateOptions)} - Dot color: {dotColor}</p>
+                <p className="my-3">
+                    {'Date: '}
+                    <span className="fw-bold">
+                        {roundDate.toLocaleDateString("en-GB", dateOptions)}
+                    </span>
+                    {' - Dot color: '}
+                    <span className={`fw-bold py-1 px-2 rounded-pill Round-${dotColor}`}>{dotColor}</span>
+                </p>
                 {holeComponents}
             </div>
         </RoundContext.Provider>
