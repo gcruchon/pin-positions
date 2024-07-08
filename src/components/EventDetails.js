@@ -49,16 +49,12 @@ export const EventDetails = () => {
 
     const saveRoundField = async (newValue, field, roundIndex) => {
         const { rounds } = eventData;
-        console.log("rounds", rounds);
         const i = roundIndex - 1;
         const round = rounds[i];
-        console.log("round avant", round);
 
         round[field] = newValue;
-        console.log("round après", round);
         rounds.splice(i, 1, round);
         const udpdatedFragment = { updated: serverTimestamp(), rounds };
-        console.log("udpdatedFragment", udpdatedFragment);
         await updateEvent(udpdatedFragment);
 
     };

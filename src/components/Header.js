@@ -28,7 +28,7 @@ export const Header = () => {
                     )
                     : (
                         <div className="ms-auto text-end">
-                            <Button onClick={signIn} size="sm" variant="outline-primary">Sign in</Button>
+                            <Button onClick={async () => signIn('/')} size="sm" variant="outline-primary">Sign in</Button>
                         </div>
                     )
             }

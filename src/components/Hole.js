@@ -55,7 +55,6 @@ export const Hole = ({ hole, value }) => {
   }
 
   const saveDistanceToBase = async (initialDistance, newDistance, distanceType) => {
-    console.log("saveDistanceToBase", initialDistance, newDistance, distanceType);
     if (initialDistance !== newDistance) {
       switch (distanceType) {
         case "fromFront":
@@ -71,7 +70,6 @@ export const Hole = ({ hole, value }) => {
   }
   const saveFieldToBase = async (fieldId, fieldValue) => {
     setDbState("saving");
-    console.log("saveFieldToBase", fieldId, fieldValue);
     const holeData = {}
     holeData[fieldId] = fieldValue;
     holeData["updated"] = serverTimestamp();

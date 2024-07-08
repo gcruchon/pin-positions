@@ -8,15 +8,18 @@ export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const navigate = useNavigate();
 
-    const signIn = () => {
+    const signIn = (nextUrl = "/") => {
         signInWithPopup(auth, provider)
             .then(() => {
+                localStorage.setItem("loggedin", "true");
+                navigate(nextUrl);
             }).catch((error) => {
                 console.error(error);
             });
     }
     const signOutFromApp = () => {
         signOut(auth).then(() => {
+            localStorage.setItem("loggedin", "false");
             navigate('/');
         }).catch((error) => {
             console.error(error);
@@ -33,9 +36,9 @@ export const AuthProvider = ({ children }) => {
         onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
             if (user) {
-                console.log("user", user)
+                localStorage.setItem("loggedin", "true");
             } else {
-                console.log("user is logged out")
+                localStorage.setItem("loggedin", "false");
             }
         });
 

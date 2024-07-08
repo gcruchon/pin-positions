@@ -26,7 +26,7 @@ export const EventList = () => {
             alert("You must enter a start date for this new event.");
             return;
         }
-        const eventRef = await addDoc(collection(db, "events"), {
+        await addDoc(collection(db, "events"), {
             name: newEventName.trim(),
             dateStart: newEventDateStart,
             rounds: [{ date: newEventDateStart, dotColor: "white" }],
@@ -34,7 +34,6 @@ export const EventList = () => {
             created: serverTimestamp(),
             createdBy: currentUser.email,
         });
-        console.log("Document written with ID: ", eventRef.id);
 
     }
 
@@ -55,7 +54,7 @@ export const EventList = () => {
 
     return (
         <Container fluid>
-            <h1>Event list</h1>
+            <h2>Event list</h2>
             <p>Please select an event below:</p>
             <div className="list-group">
                 {
@@ -69,7 +68,7 @@ export const EventList = () => {
                 }
             </div>
             <hr />
-            <h5>Create new event</h5>
+            <h2>Create new event</h2>
             <InputGroup className="mb-3">
                 <InputGroup.Text className="">New event name</InputGroup.Text>
                 <Form.Control
