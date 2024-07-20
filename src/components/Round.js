@@ -26,7 +26,7 @@ export const Round = ({ round, roundDate, dotColor, isVisible, holes }) => {
                     <span className="fw-bold">
                         {roundDate.toLocaleDateString("en-GB", dateOptions)}
                     </span>
-                    {' - Dot color: '}
+                    {' - Dots: '}
                     <span className={`fw-bold py-1 px-2 rounded-pill Round-${dotColor}`}>{dotColor}</span>
                 </p>
                 {holeComponents}
