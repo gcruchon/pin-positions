@@ -60,29 +60,31 @@ const HoleValue = ({ hole, previousHole, current }) => {
     : 0;
 
   const restoreVersion = async () => {
-    const holeRef = doc(db, "holes", `${hole.eventId}|${hole.round}|${hole.hole}`);
-    await runTransaction(db, async (transaction) => {
-      const holeDoc = await transaction.get(holeRef);
-      if (holeDoc.exists()) {
-        const previousVersionOfHole = holeDoc.data();
-        const currentVersion = previousVersionOfHole.version || 1;
-        const historyRef = doc(
-          db,
-          "holes",
-          `${hole.eventId}|${hole.round}|${hole.hole}`,
-          "history",
-          `${hole.eventId}|${hole.round}|${hole.hole}-v${currentVersion}`);
-        const holeData = { ...hole };
-        holeData["version"] = currentVersion + 1;
-        holeData["updated"] = serverTimestamp();
-        holeData["updatedBy"] = currentUser.email;
-        transaction.set(historyRef, previousVersionOfHole);
-        transaction.update(holeRef, holeData);
+    if (window.confirm(`Are you sure you want to restore v${hole.version}?`)) {
+      const holeRef = doc(db, "holes", `${hole.eventId}|${hole.round}|${hole.hole}`);
+      await runTransaction(db, async (transaction) => {
+        const holeDoc = await transaction.get(holeRef);
+        if (holeDoc.exists()) {
+          const previousVersionOfHole = holeDoc.data();
+          const currentVersion = previousVersionOfHole.version || 1;
+          const historyRef = doc(
+            db,
+            "holes",
+            `${hole.eventId}|${hole.round}|${hole.hole}`,
+            "history",
+            `${hole.eventId}|${hole.round}|${hole.hole}-v${currentVersion}`);
+          const holeData = { ...hole };
+          holeData["version"] = currentVersion + 1;
+          holeData["updated"] = serverTimestamp();
+          holeData["updatedBy"] = currentUser.email;
+          transaction.set(historyRef, previousVersionOfHole);
+          transaction.update(holeRef, holeData);
 
-      } else {
-        throw new Error(`Hole "${hole.eventId}|${hole.round}|${hole.hole}" does not exist`);
-      }
-    });
+        } else {
+          throw new Error(`Hole "${hole.eventId}|${hole.round}|${hole.hole}" does not exist`);
+        }
+      });
+    }
 
   }
 
@@ -107,7 +109,7 @@ const HoleValue = ({ hole, previousHole, current }) => {
           {
             current
               ? <span className="fw-bold">Current value</span>
-              : <Button onClick={() => restoreVersion()} size="sm">Restore</Button>
+              : <Button onClick={() => restoreVersion()} size="sm" variant="outline-primary">Restore</Button>
           }
         </td>
       </tr>
@@ -171,9 +173,9 @@ export const HoleHistory = () => {
   return (
     <>
       <Container className={historyPageStatus === "loaded" ? "" : "d-none"} fluid>
-      <h5>Hole History</h5>
-      <h6>Round N°{round} {">"} Hole # {hole}</h6>
-      <Table striped={true} bordered={true} hover={true} size="sm">
+        <h5>Hole History</h5>
+        <h6>Round N°{round} {">"} Hole # {hole}</h6>
+        <Table striped={true} bordered={true} hover={true} size="sm">
           <thead>
             <tr>
               <th>
