@@ -15,6 +15,7 @@ import { requireAuth } from './requireAuth';
 
 import './App.css';
 import { HoleHistory } from './components/HoleHistory';
+import { UserList } from './components/UserList';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,11 @@ const router = createBrowserRouter([
         path: "login",
         element: <Login />,
         loader: loginLoader
+      },
+      {
+        path: "users",
+        element: <UserList />,
+        loader: async ({ request }) => await requireAuth(request),
       },
       {
         path: "events",

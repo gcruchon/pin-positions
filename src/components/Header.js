@@ -16,7 +16,9 @@ export const Header = () => {
             <nav className="pt-2 ps-3">
                 <NavLink to="/">Home</NavLink>
                 {' - '}
-                <NavLink to="/events">Event list</NavLink>
+                <NavLink to="/events">Events</NavLink>
+                {' - '}
+                <NavLink to="/users">Users</NavLink>
             </nav>
             {
                 currentUser
