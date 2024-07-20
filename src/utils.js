@@ -13,8 +13,8 @@ export const getEmptyData = (eventId, numberOfRounds) => {
 }
 
 
-export const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-export const dateTimeOptions = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+export const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+export const dateTimeOptions = { weekday: 'short', year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
 
 export const getLocalISOstringFromDb = (dateFromDb) => {
     return `${dateFromDb}T00:00:00`;
