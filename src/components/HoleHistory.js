@@ -135,7 +135,6 @@ export const HoleHistory = () => {
       snapshot.forEach((doc) => {
         holes.push(doc.data());
       })
-      console.log("history", holes);
       setHistoryHoles(holes);
       setHistoryHolesLoadingStatus("loaded");
     },
@@ -172,8 +171,9 @@ export const HoleHistory = () => {
   return (
     <>
       <Container className={historyPageStatus === "loaded" ? "" : "d-none"} fluid>
-        <h5>Hole History</h5>
-        <Table striped={true} bordered={true} hover={true} size="sm">
+      <h5>Hole History</h5>
+      <h6>Round N°{round} {">"} Hole # {hole}</h6>
+      <Table striped={true} bordered={true} hover={true} size="sm">
           <thead>
             <tr>
               <th>
