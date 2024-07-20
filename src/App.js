@@ -14,6 +14,7 @@ import { Welcome } from './components/Welcome';
 import { requireAuth } from './requireAuth';
 
 import './App.css';
+import { HoleHistory } from './components/HoleHistory';
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,11 @@ const router = createBrowserRouter([
       {
         path: "events/:eventId/details",
         element: <EventDetails />,
+        loader: async ({ request }) => await requireAuth(request),
+      },
+      {
+        path: "events/:eventId/round/:round/hole/:hole/history",
+        element: <HoleHistory />,
         loader: async ({ request }) => await requireAuth(request),
       },
     ]

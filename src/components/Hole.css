@@ -1,3 +1,9 @@
 .Hole-db-saving input {
   background-color: #ffe4d6;
 }
+
+.Hole-link {
+  font-weight: bold;
+  color: var(--bs-body-color);
+  text-decoration: none;
+}

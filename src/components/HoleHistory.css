@@ -1,0 +1,24 @@
+.HoleHistory-date {
+  font-size: 90%;
+}
+.HoleHistory-version {
+  font-style: italic;
+  color: var(--bs-dark-text-emphasis);
+  font-size: 90%;
+
+}
+.HoleHistory-user {
+  font-size: 70%;
+  font-style: italic;
+}
+.HoleHistory-same-value {
+  font-style: italic;
+  color: var(--bs-dark-text-emphasis)
+}
+.HoleHistory-different-value {
+  font-weight: bold;
+}
+.HoleHistory-no-history {
+  text-align: center;
+  font-style: italic;
+}

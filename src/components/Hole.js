@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { Link } from "react-router-dom";
 import { doc, serverTimestamp, runTransaction } from "firebase/firestore";
 import { db } from '../firebase';
 import Form from 'react-bootstrap/Form';
@@ -115,7 +116,9 @@ export const Hole = ({ hole, value }) => {
   return (
     <div className={`mb-4 Hole-db-${dbState}`}>
       <InputGroup>
-        <InputGroup.Text id="basic-addon2"># {hole}</InputGroup.Text>
+        <InputGroup.Text id="basic-addon2">
+          <Link className="Hole-link" to={`/events/${eventId}/round/${round}/hole/${hole}/history`}># {hole}</Link>
+        </InputGroup.Text>
         <DistanceInput distance={distanceFromFront} distanceType="fromFront" saveDistanceToBase={saveDistanceToBase} />
         <InputGroup.Text id="basic-addon2"> - </InputGroup.Text>
         <DistanceInput distance={distanceFromSide} distanceType="fromSide" saveDistanceToBase={saveDistanceToBase} />

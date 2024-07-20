@@ -14,6 +14,7 @@ export const getEmptyData = (eventId, numberOfRounds) => {
 
 
 export const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+export const dateTimeOptions = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
 
 export const getLocalISOstringFromDb = (dateFromDb) => {
     return `${dateFromDb}T00:00:00`;
