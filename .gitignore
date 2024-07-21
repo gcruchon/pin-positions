@@ -57,5 +57,5 @@ yarn-error.log*
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
-src/firebaseConfig.js
 .firebase/hosting.YnVpbGQ.cache
+.env
