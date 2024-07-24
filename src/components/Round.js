@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
+import Button from "react-bootstrap/Button";
 
 import { Hole } from "./Hole";
 import { getLocalDateFromDb, dateOptions } from '../utils';
@@ -11,6 +12,7 @@ export const Round = () => {
     const { eventId, round } = useParams();
     const { eventData, holes } = useOutletContext();
     const [roundData, setRoundData] = useState({ roundDate: null, dotColor: null });
+    const navigate = useNavigate();
 
     useEffect(() => {
         const roundIndex = isNaN(round)
@@ -42,6 +44,9 @@ export const Round = () => {
                                 return (<Hole hole={i + 1} value={hole} key={`${round}-${i + 1}`} />);
                             }))
                         }
+                        <p className="my-3">
+                            <Button onClick={() => navigate(`/events/${eventId}/round/${round}/stats`)} size="sm">See stats</Button>
+                        </p>
                     </div>
                     : <Alert variant="warning" className="mt-4">No round configured</Alert>
             }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, Outlet, useNavigate } from 'react-router-dom';
+import { useParams, Link, Outlet, useNavigate, useResolvedPath } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
@@ -11,16 +11,26 @@ import { db } from '../firebase';
 export const Event = () => {
     const { eventId, round: displayedRound } = useParams();
     const navigate = useNavigate();
+    const path = useResolvedPath();
 
     const [eventData, setEventData] = useState({});
     const [eventPageStatus, setEventPageStatus] = useState("syncing");
     const [holes, setHoles] = useState([]);
+    const [suffix, setSuffix] = useState('');
 
     const selectRound = (round) => {
-        navigate(`/events/${eventId}/round/${round}`)
+        navigate(`/events/${eventId}/round/${round}${suffix}`);
     };
 
 
+
+    useEffect(() => {
+        setSuffix(
+            path.pathname.slice(-6) === "/stats"
+                ? "/stats"
+                : ""
+        )
+    }, [path]);
 
     useEffect(() => {
         setEventPageStatus("exists");
@@ -36,6 +46,7 @@ export const Event = () => {
         }
         getEvent(eventId);
     }, [eventId]);
+
     useEffect(() => {
         if (eventPageStatus === "event-exists") {
             const holesRef = collection(db, "holes");
