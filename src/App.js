@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   createBrowserRouter,
+  Navigate,
   RouterProvider,
 } from "react-router-dom";
 
@@ -16,6 +17,7 @@ import { requireAuth } from './requireAuth';
 import './App.css';
 import { HoleHistory } from './components/HoleHistory';
 import { UserList } from './components/UserList';
+import { Round } from './components/Round';
 
 const router = createBrowserRouter([
   {
@@ -45,6 +47,17 @@ const router = createBrowserRouter([
         path: "events/:eventId",
         element: <Event />,
         loader: async ({ request }) => await requireAuth(request),
+        children: [
+          {
+            index: true,
+            element: <Navigate to="round/1" replace />,
+          },
+          {
+            path: "round/:round",
+            element: <Round />,
+            loader: async ({ request }) => await requireAuth(request),
+          },
+        ]
       },
       {
         path: "events/:eventId/details",

@@ -1,31 +1,27 @@
-import { createContext, useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, Link, Outlet, useNavigate } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import { collection, where, query, onSnapshot, doc, getDoc } from 'firebase/firestore';
 
-import { getLocalDateFromDb } from '../utils';
 import { db } from '../firebase';
-import { Round } from "./Round";
-
-export const EventContext = createContext();
 
 export const Event = () => {
-    const { eventId } = useParams();
+    const { eventId, round: displayedRound } = useParams();
+    const navigate = useNavigate();
 
-    const [displayedRound, setDisplayedRound] = useState(1);
     const [eventData, setEventData] = useState({});
     const [eventPageStatus, setEventPageStatus] = useState("syncing");
     const [holes, setHoles] = useState([]);
 
-    const getActiveClass = (round) => {
-        if (displayedRound === round) {
-            return "active font-weight-bold"
-        }
-        return "";
-    }
+    const selectRound = (round) => {
+        navigate(`/events/${eventId}/round/${round}`)
+    };
+
+
+
     useEffect(() => {
         setEventPageStatus("exists");
         const getEvent = async (eventId) => {
@@ -60,7 +56,7 @@ export const Event = () => {
     }, [eventId, eventPageStatus]);
 
     return (
-        <EventContext.Provider value={eventId}>
+        <>
             <Container className={eventPageStatus === "event-exists" ? "" : "d-none"} fluid >
                 <h2>
                     {eventData.name}
@@ -77,9 +73,13 @@ export const Event = () => {
                                 return (
                                     <Nav.Item key={`navItem-round-${roundIndex}`}>
                                         <Nav.Link
-                                            className={getActiveClass(roundIndex)}
+                                            className={
+                                                !isNaN(displayedRound) && parseInt(displayedRound, 10) === roundIndex
+                                                    ? "active font-weight-bold"
+                                                    : ""
+                                            }
                                             data-round={roundIndex}
-                                            onClick={(e) => { setDisplayedRound(parseInt(e.target.dataset.round, 10)) }}>Round N°{roundIndex}</Nav.Link>
+                                            onClick={(e) => { selectRound(e.target.dataset.round) }}>Round N°{roundIndex}</Nav.Link>
                                     </Nav.Item>
                                 )
                             })
@@ -87,26 +87,10 @@ export const Event = () => {
                     }
                 </Nav>
 
-                {
-                    eventData.rounds
-                        ? eventData.rounds.map((round, i) => {
-                            const roundIndex = i + 1;
-                            return (
-                                <Round
-                                    key={`round-${roundIndex}`}
-                                    round={roundIndex}
-                                    roundDate={getLocalDateFromDb(round.date)}
-                                    dotColor={round.dotColor}
-                                    isVisible={roundIndex === displayedRound}
-                                    holes={holes} />
-                            )
-
-                        })
-                        : <Alert variant="warning" className="mt-4">No round configured</Alert>
-                }
+                <Outlet context={{ eventId, eventData, holes }} />
             </Container>
             <Alert show={eventPageStatus === "light"} variant="danger">Loading event...</Alert>
             <Alert show={eventPageStatus === "not-found"} variant="danger">Event not found!</Alert>
-        </EventContext.Provider>
+        </>
     );
 }

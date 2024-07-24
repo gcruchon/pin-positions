@@ -1,12 +1,10 @@
-import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import { doc, serverTimestamp, runTransaction } from "firebase/firestore";
 import { db } from '../firebase';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup'
 
-import { EventContext } from "./Event";
-import { RoundContext } from "./Round";
 import { useAuth } from '../hooks';
 import './Hole.css';
 
@@ -33,8 +31,7 @@ const SideButton = ({ side, handleSide, getSideButtonClassName }) => {
 }
 
 export const Hole = ({ hole, value }) => {
-  const eventId = useContext(EventContext);
-  const round = useContext(RoundContext);
+  const { eventId, round } = useParams();
   const { currentUser } = useAuth();
 
   const [distanceFromFront, setDistanceFromFront] = useState("");
