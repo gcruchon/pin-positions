@@ -4,7 +4,7 @@ import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
-import { collection, where, query, onSnapshot, doc, getDoc } from 'firebase/firestore';
+import { collection, where, query, onSnapshot, doc, getDoc, orderBy } from 'firebase/firestore';
 
 import { db } from '../firebase';
 
@@ -16,6 +16,7 @@ export const Event = () => {
     const [eventData, setEventData] = useState({});
     const [eventPageStatus, setEventPageStatus] = useState("syncing");
     const [holes, setHoles] = useState([]);
+    const [rulings, setRulings] = useState([]);
     const [suffix, setSuffix] = useState('');
 
     const selectRound = (round) => {
@@ -25,20 +26,22 @@ export const Event = () => {
 
 
     useEffect(() => {
-        setSuffix(
-            path.pathname.slice(-6) === "/stats"
-                ? "/stats"
-                : ""
-        )
+        if(path.pathname.slice(-6) === "/stats") {
+            setSuffix("/stats");
+        } else if (path.pathname.slice(-8) === "/rulings") {
+            setSuffix("/rulings");
+        } else {
+            setSuffix("");
+        }
     }, [path]);
 
     useEffect(() => {
         setEventPageStatus("exists");
         const getEvent = async (eventId) => {
             const eventRef = doc(db, "events", eventId);
-            const eventSnap = await getDoc(eventRef);
-            if (eventSnap.exists()) {
-                setEventData(eventSnap.data());
+            const eventDoc = await getDoc(eventRef);
+            if (eventDoc.exists()) {
+                setEventData(eventDoc.data());
                 setEventPageStatus("event-exists")
             } else {
                 setEventPageStatus("not-found")
@@ -58,6 +61,25 @@ export const Event = () => {
                         holes[doc.id] = doc.data();
                     });
                     setHoles(holes);
+                },
+                (error) => {
+                    console.error(error);
+                });
+            return () => unsubscribe();
+        }
+    }, [eventId, eventPageStatus]);
+
+    useEffect(() => {
+        if (eventPageStatus === "event-exists") {
+            const rulingsRef = collection(db, "rulings");
+            const q = query(rulingsRef, where("eventId", "==", eventId), orderBy("ruledAt", "asc"));
+            const unsubscribe = onSnapshot(q,
+                (querySnapshot) => {
+                    let rulings = {};
+                    querySnapshot.forEach((doc) => {
+                        rulings[doc.id] = doc.data();
+                    });
+                    setRulings(rulings);
                 },
                 (error) => {
                     console.error(error);
@@ -98,7 +120,7 @@ export const Event = () => {
                     }
                 </Nav>
 
-                <Outlet context={{ eventId, eventData, holes }} />
+                <Outlet context={{ eventId, eventData, holes, rulings }} />
             </Container>
             <Alert show={eventPageStatus === "light"} variant="danger">Loading event...</Alert>
             <Alert show={eventPageStatus === "not-found"} variant="danger">Event not found!</Alert>

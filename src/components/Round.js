@@ -44,9 +44,8 @@ export const Round = () => {
                                 return (<Hole hole={i + 1} value={hole} key={`${round}-${i + 1}`} />);
                             }))
                         }
-                        <p className="my-3">
-                            <Button onClick={() => navigate(`/events/${eventId}/round/${round}/stats`)} size="sm">See stats</Button>
-                        </p>
+                        <Button onClick={() => navigate(`/events/${eventId}/round/${round}/stats`)} size="sm" className="me-2 my-3">See stats</Button>
+                        <Button onClick={() => navigate(`/events/${eventId}/round/${round}/rulings`)} size="sm" className="me-2 my-3">See rulings</Button>
                     </div>
                     : <Alert variant="warning" className="mt-4">No round configured</Alert>
             }

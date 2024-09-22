@@ -23,8 +23,8 @@ export const RoundStats = () => {
     const navigate = useNavigate();
 
     const getColor = (count, total) => {
-        if(total > 0) {
-            const colorValue = 256 - Math.round( 256 * count / total);
+        if (total > 0) {
+            const colorValue = 256 - Math.round(256 * count / total);
             let hexString = colorValue.toString(16);
             if (hexString.length === 1) {
                 hexString = "0" + hexString;
@@ -99,16 +99,16 @@ export const RoundStats = () => {
                                 ? <Table bordered>
                                     <tbody>
                                         <tr>
-                                            <th style={{width: '10%'}}></th>
-                                            <th style={{width: '30%'}}>left</th>
-                                            <th style={{width: '30%'}} className="text-center">center</th>
-                                            <th style={{width: '30%'}} className="text-end">right</th>
+                                            <th style={{ width: '10%' }}></th>
+                                            <th style={{ width: '30%' }}>left</th>
+                                            <th style={{ width: '30%' }} className="text-center">center</th>
+                                            <th style={{ width: '30%' }} className="text-end">right</th>
                                         </tr>
                                         {
                                             depthValues.map(depth => {
                                                 return (
                                                     <tr key={`tr-${depth}`}>
-                                                        <th style={{width: '10%'}} className="text-center py-4" >
+                                                        <th style={{ width: '10%' }} className="text-center py-4" >
                                                             {depth}
                                                         </th>
                                                         {
@@ -132,10 +132,9 @@ export const RoundStats = () => {
                                 </Table>
                                 : <Alert variant="warning" className="mt-4">No stats</Alert>
                         }
-                        <p className="my-3">
-                            <Button onClick={() => navigate(`/events/${eventId}/round/${round}`)} size="sm">See pin positions</Button>
-                        </p>
-                        </>
+                        <Button onClick={() => navigate(`/events/${eventId}/round/${round}`)} size="sm" className="me-2 my-3">See pin positions</Button>
+                        <Button onClick={() => navigate(`/events/${eventId}/round/${round}/rulings`)} size="sm" className="me-2 my-3">See rulings</Button>
+                    </>
                     : <Alert variant="warning" className="mt-4">No round configured</Alert>
             }
 
