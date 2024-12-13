@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { doc, serverTimestamp, runTransaction } from "firebase/firestore";
 import { db } from '../firebase';
 import Form from 'react-bootstrap/Form';
@@ -7,6 +7,7 @@ import InputGroup from 'react-bootstrap/InputGroup'
 
 import { useAuth } from '../hooks';
 import './Hole.css';
+import './dots.css'
 
 const DistanceInput = ({ distance, distanceType, saveDistanceToBase }) => {
   const initialDistance = distance;
@@ -30,8 +31,9 @@ const SideButton = ({ side, handleSide, getSideButtonClassName }) => {
   )
 }
 
-export const Hole = ({ hole, value }) => {
-  const { eventId, round } = useParams();
+export const Hole = ({ round, hole, value, dotColor = "none" }) => {
+  const { pathname } = useLocation();
+  const { eventId } = useParams();
   const { currentUser } = useAuth();
 
   const [distanceFromFront, setDistanceFromFront] = useState("");
@@ -47,6 +49,10 @@ export const Hole = ({ hole, value }) => {
       className += "btn-outline-primary";
     }
     return className;
+  }
+
+  const isShowingAllPins = () => {
+    return pathname.split("/").pop() === 'pins';
   }
 
   const handleSide = async (newSide) => {
@@ -107,14 +113,21 @@ export const Hole = ({ hole, value }) => {
     setDistanceFromFront(value.distanceFromFront || "");
     setDistanceFromSide(value.distanceFromSide || "");
     setSide(value.side || "");
-    setDbState("saved")
-  }, [value]);
+    setDbState("saved");
+  }, [value, dotColor]);
 
   return (
     <div className={`mb-4 Hole-db-${dbState}`}>
       <InputGroup>
-        <InputGroup.Text id="basic-addon2">
-          <Link className="Hole-link" to={`/events/${eventId}/round/${round}/hole/${hole}/history`}># {hole}</Link>
+        <InputGroup.Text id="basic-addon2" className={`dots-${dotColor}`}>
+          <Link className="Hole-link" to={`/events/${eventId}/round/${round}/hole/${hole}/history${isShowingAllPins() ? '#fromPins' : ''}`}>
+            {
+              isShowingAllPins()
+                ? `R${round} - `
+                : ""
+            }
+            {'# '}{hole}
+          </Link>
         </InputGroup.Text>
         <DistanceInput distance={distanceFromFront} distanceType="fromFront" saveDistanceToBase={saveDistanceToBase} />
         <InputGroup.Text id="basic-addon2"> - </InputGroup.Text>

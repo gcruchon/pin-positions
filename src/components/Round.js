@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import { Hole } from "./Hole";
 import { getLocalDateFromDb, dateOptions } from '../utils';
 
-import './Round.css'
+import './dots.css'
 
 export const Round = () => {
     const { eventId, round } = useParams();
@@ -35,13 +35,13 @@ export const Round = () => {
                                 {getLocalDateFromDb(roundData.date).toLocaleDateString("en-GB", dateOptions)}
                             </span>
                             {' - Dots: '}
-                            <span className={`fw-bold py-1 px-2 rounded-pill Round-${roundData.dotColor}`}>{roundData.dotColor}</span>
+                            <span className={`fw-bold py-1 px-2 rounded-pill dots-${roundData.dotColor}`}>{roundData.dotColor}</span>
                         </p>
 
                         {
                             [...Array(18).keys()].map((i => {
                                 const hole = holes[`${eventId}|${round}|${i + 1}`] || {}
-                                return (<Hole hole={i + 1} value={hole} key={`${round}-${i + 1}`} />);
+                                return (<Hole round={round} hole={i + 1} value={hole} key={`${round}-${i + 1}`} />);
                             }))
                         }
                         <Button onClick={() => navigate(`/events/${eventId}/round/${round}/stats`)} size="sm" className="me-2 my-3">See stats</Button>

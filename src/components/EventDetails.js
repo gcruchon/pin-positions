@@ -288,7 +288,7 @@ export const EventDetails = () => {
                         <Button variant="outline-secondary" onClick={() => addEditor()}>Add</Button>
                     </InputGroup>
                     <Container className="my-4" fluid>
-                        <Link to={`/events/${eventId}`}>
+                        <Link to={`/events/${eventId}/pins`}>
                             <Button variant="outline-secondary">Edit pin positions</Button>
                         </Link>
                     </Container>

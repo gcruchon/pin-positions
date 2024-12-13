@@ -6,7 +6,7 @@ import Table from 'react-bootstrap/Table';
 
 import { getLocalDateFromDb, dateOptions } from '../utils';
 
-import './Round.css'
+import './dots.css'
 
 export const RoundStats = () => {
     const { eventId, round } = useParams();
@@ -92,7 +92,7 @@ export const RoundStats = () => {
                                 {getLocalDateFromDb(roundData.date).toLocaleDateString("en-GB", dateOptions)}
                             </span>
                             {' - Dots: '}
-                            <span className={`fw-bold py-1 px-2 rounded-pill Round-${roundData.dotColor}`}>{roundData.dotColor}</span>
+                            <span className={`fw-bold py-1 px-2 rounded-pill dots-${roundData.dotColor}`}>{roundData.dotColor}</span>
                         </p>
                         {
                             stats.totalHoles

@@ -1,0 +1,16 @@
+.dots-white, .input-group-text.dots-white, .dots-white .Hole-link {
+  background-color: #eee;
+  color: black;
+}
+.dots-red, .input-group-text.dots-red, .dots-red .Hole-link {
+  background-color: red;
+  color: white;
+}
+.dots-blue, .input-group-text.dots-blue, .dots-blue .Hole-link {
+  background-color: blue;
+  color: white;
+}
+.dots-yellow, .input-group-text.dots-yellow, .dots-yellow .Hole-link {
+  background-color: yellow;
+  color: black;
+}

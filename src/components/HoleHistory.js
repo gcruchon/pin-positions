@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Alert from 'react-bootstrap/Alert';
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -122,12 +122,17 @@ const HoleValue = ({ hole, previousHole, current }) => {
 export const HoleHistory = () => {
 
   const { eventId, round, hole } = useParams();
+  const { hash } = useLocation();
   const [historyHoles, setHistoryHoles] = useState([]);
   const [currentHole, setCurrentHole] = useState(null);
   const [historyHolesLoadingStatus, setHistoryHolesLoadingStatus] = useState("syncing");
   const [currentHoleLoadingStatus, setCurrentHoleLoadingStatus] = useState("syncing");
   const [historyPageStatus, setHistoryPageStatus] = useState("syncing");
   const navigate = useNavigate();
+
+  const backUrl = hash === "#fromPins"
+    ? `/events/${eventId}/pins#hole_${hole}`
+    : `/events/${eventId}/round/${round}`;
 
 
   useEffect(() => {
@@ -176,7 +181,7 @@ export const HoleHistory = () => {
       <Container className={historyPageStatus === "loaded" ? "" : "d-none"} fluid>
         <h5>Hole History</h5>
         <h6>Round N°{round} {">"} Hole # {hole}</h6>
-        <Button onClick={() => navigate(`/events/${eventId}/round/${round}`)} size="sm" className="mb-2">Back</Button>
+        <Button onClick={() => navigate(backUrl)} size="sm" className="mb-2">Back</Button>
         <Table striped={true} bordered={true} hover={true} size="sm">
           <thead>
             <tr>
@@ -214,7 +219,7 @@ export const HoleHistory = () => {
             }
           </tbody>
         </Table>
-        <Button onClick={() => navigate(`/events/${eventId}/round/${round}`)} size="sm">Back</Button>
+        <Button onClick={() => navigate(backUrl)} size="sm">Back</Button>
       </Container>
       <Alert show={historyPageStatus === "syncing"} variant="warning">Loading history...</Alert>
       <Alert show={historyPageStatus === "not-found"} variant="danger">Error, please reload page</Alert>

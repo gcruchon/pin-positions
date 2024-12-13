@@ -12,8 +12,6 @@ import { getLocalDateFromDb, dateOptions, rulingDateTimeOptions } from '../utils
 import { db } from '../firebase';
 import { useAuth } from '../hooks';
 
-import './Round.css'
-
 export const RoundRulings = () => {
     const { currentUser } = useAuth();
     const { eventId, round } = useParams();

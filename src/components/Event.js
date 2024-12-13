@@ -26,7 +26,7 @@ export const Event = () => {
 
 
     useEffect(() => {
-        if(path.pathname.slice(-6) === "/stats") {
+        if (path.pathname.slice(-6) === "/stats") {
             setSuffix("/stats");
         } else if (path.pathname.slice(-8) === "/rulings") {
             setSuffix("/rulings");
@@ -99,6 +99,15 @@ export const Event = () => {
                     </Link>
                 </h2>
                 <Nav variant="tabs" defaultActiveKey="/">
+                    <Nav.Item key="navItem-pins">
+                        <Nav.Link
+                            className={
+                                isNaN(displayedRound)
+                                    ? "active font-weight-bold"
+                                    : ""
+                            }
+                            onClick={(e) => navigate(`/events/${eventId}/pins`)}>All pins</Nav.Link>
+                    </Nav.Item>
                     {
                         eventData.rounds
                             ? eventData.rounds.map((round, i) => {
