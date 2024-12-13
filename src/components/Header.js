@@ -11,14 +11,14 @@ export const Header = () => {
     return (
         <Container fluid className="Header d-flex pt-3 pb-1 mb-3">
             <h1>
-                Pin positions
+                Golf events
             </h1>
             <nav className="pt-2 ps-3">
                 <NavLink to="/">Home</NavLink>
                 {' - '}
                 <NavLink to="/events">Events</NavLink>
                 {' - '}
-                <NavLink to="/users">Users</NavLink>
+                <NavLink to="/users">Referees</NavLink>
             </nav>
             {
                 currentUser

@@ -19,6 +19,7 @@ import { HoleHistory } from './components/HoleHistory';
 import { UserList } from './components/UserList';
 import { Pins } from './components/Pins';
 import { Round } from './components/Round';
+import { RoundPins } from './components/RoundPins';
 import { RoundStats } from './components/RoundStats';
 import { RoundRulings } from './components/RoundRulings';
 
@@ -64,16 +65,27 @@ const router = createBrowserRouter([
             path: "round/:round",
             element: <Round />,
             loader: async ({ request }) => await requireAuth(request),
-          },
-          {
-            path: "round/:round/stats",
-            element: <RoundStats />,
-            loader: async ({ request }) => await requireAuth(request),
-          },
-          {
-            path: "round/:round/rulings",
-            element: <RoundRulings />,
-            loader: async ({ request }) => await requireAuth(request),
+            children: [
+              {
+                index: true,
+                element: <Navigate to="pins" replace />,
+              },
+              {
+                path: "pins",
+                element: <RoundPins />,
+                loader: async ({ request }) => await requireAuth(request),
+              },
+              {
+                path: "stats",
+                element: <RoundStats />,
+                loader: async ({ request }) => await requireAuth(request),
+              },
+              {
+                path: "rulings",
+                element: <RoundRulings />,
+                loader: async ({ request }) => await requireAuth(request),
+              },
+            ]
           },
         ]
       },

@@ -4,7 +4,7 @@ import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
-import { collection, where, query, onSnapshot, doc, getDoc, orderBy } from 'firebase/firestore';
+import { collection, where, query, onSnapshot, doc, getDoc, and, orderBy } from 'firebase/firestore';
 
 import { db } from '../firebase';
 
@@ -17,13 +17,12 @@ export const Event = () => {
     const [eventPageStatus, setEventPageStatus] = useState("syncing");
     const [holes, setHoles] = useState([]);
     const [rulings, setRulings] = useState([]);
+    const [referees, setReferees] = useState([]);
     const [suffix, setSuffix] = useState('');
 
     const selectRound = (round) => {
         navigate(`/events/${eventId}/round/${round}${suffix}`);
     };
-
-
 
     useEffect(() => {
         if (path.pathname.slice(-6) === "/stats") {
@@ -71,8 +70,26 @@ export const Event = () => {
 
     useEffect(() => {
         if (eventPageStatus === "event-exists") {
+            const refereesRef = collection(db, "users");
+            const unsubscribe = onSnapshot(refereesRef,
+                (querySnapshot) => {
+                    let referees = {};
+                    querySnapshot.forEach((doc) => {
+                        referees[doc.id] = doc.data();
+                    });
+                    setReferees(referees);
+                },
+                (error) => {
+                    console.error(error);
+                });
+            return () => unsubscribe();
+        }
+    }, [eventId, eventPageStatus]);
+
+    useEffect(() => {
+        if (eventPageStatus === "event-exists") {
             const rulingsRef = collection(db, "rulings");
-            const q = query(rulingsRef, where("eventId", "==", eventId), orderBy("ruledAt", "asc"));
+            const q = query(rulingsRef, and(where("eventId", "==", eventId), where("deleted", "==", false)), orderBy("ruledAt", "asc"));
             const unsubscribe = onSnapshot(q,
                 (querySnapshot) => {
                     let rulings = {};
@@ -129,7 +146,7 @@ export const Event = () => {
                     }
                 </Nav>
 
-                <Outlet context={{ eventId, eventData, holes, rulings }} />
+                <Outlet context={{ eventId, eventData, holes, rulings, referees }} />
             </Container>
             <Alert show={eventPageStatus === "light"} variant="danger">Loading event...</Alert>
             <Alert show={eventPageStatus === "not-found"} variant="danger">Event not found!</Alert>

@@ -1,0 +1,15 @@
+.Ruling-current-referee {
+  border-color: var(--bs-primary-border-subtle);
+}
+
+.Ruling-current-referee .card-footer {
+  background-color: var(--bs-primary-bg-subtle);
+}
+
+.Ruling-other-referee {
+  border-color: var(--bs-secondary-border-subtle);
+}
+
+.Ruling-other-referee .card-footer {
+  background-color: var(--bs-secondary-bg-subtle);
+}

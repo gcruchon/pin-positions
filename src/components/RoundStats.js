@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
+import { useOutletContext, useParams } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
-import Button from "react-bootstrap/Button";
 import Table from 'react-bootstrap/Table';
-
-import { getLocalDateFromDb, dateOptions } from '../utils';
 
 import './dots.css'
 
@@ -20,7 +17,6 @@ export const RoundStats = () => {
         middle: { left: 0, center: 0, right: 0 },
         back: { left: 0, center: 0, right: 0 },
     });
-    const navigate = useNavigate();
 
     const getColor = (count, total) => {
         if (total > 0) {
@@ -86,14 +82,6 @@ export const RoundStats = () => {
             {
                 roundData.date
                     ? <>
-                        <p className="my-3">
-                            {'Date: '}
-                            <span className="fw-bold">
-                                {getLocalDateFromDb(roundData.date).toLocaleDateString("en-GB", dateOptions)}
-                            </span>
-                            {' - Dots: '}
-                            <span className={`fw-bold py-1 px-2 rounded-pill dots-${roundData.dotColor}`}>{roundData.dotColor}</span>
-                        </p>
                         {
                             stats.totalHoles
                                 ? <Table bordered>
@@ -132,10 +120,8 @@ export const RoundStats = () => {
                                 </Table>
                                 : <Alert variant="warning" className="mt-4">No stats</Alert>
                         }
-                        <Button onClick={() => navigate(`/events/${eventId}/round/${round}`)} size="sm" className="me-2 my-3">See pin positions</Button>
-                        <Button onClick={() => navigate(`/events/${eventId}/round/${round}/rulings`)} size="sm" className="me-2 my-3">See rulings</Button>
                     </>
-                    : <Alert variant="warning" className="mt-4">No round configured</Alert>
+                    : ''
             }
 
         </>

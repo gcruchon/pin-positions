@@ -4,9 +4,20 @@
       "collectionGroup": "rulings",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "eventId", "order": "ASCENDING" },
-        { "fieldPath": "ruledAt", "order": "ASCENDING" }
+        {
+          "fieldPath": "deleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ruledAt",
+          "order": "ASCENDING"
+        }
       ]
-    }],
+    }
+  ],
   "fieldOverrides": []
 }

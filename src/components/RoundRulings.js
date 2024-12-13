@@ -1,21 +1,24 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
+import { useOutletContext, useParams } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { Trash } from 'react-bootstrap-icons';
+import { collection, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 
-import { getLocalDateFromDb, dateOptions, rulingDateTimeOptions } from '../utils';
+import { rulingDateTimeOptions } from '../utils';
 import { db } from '../firebase';
 import { useAuth } from '../hooks';
+
+import './RoundRulings.css'
 
 export const RoundRulings = () => {
     const { currentUser } = useAuth();
     const { eventId, round } = useParams();
-    const { eventData, rulings } = useOutletContext();
+    const { eventData, rulings, referees } = useOutletContext();
     const [roundData, setRoundData] = useState({ roundDate: null, dotColor: null });
     const [rulingIds, setRulingIds] = useState([]);
     const [newRulingHole, setNewRulingHole] = useState("1");
@@ -25,8 +28,25 @@ export const RoundRulings = () => {
     const [newRulingComment, setNewRulingComment] = useState("");
     const [isSaving, setIsSaving] = useState(false);
 
-    const navigate = useNavigate();
+    const isRulingFromCurrentUser = ruling => ruling.referee === currentUser.email;
 
+    const deleteRuling = async (rulingId) => {
+        if (window.confirm("Are you sure you want to delete this ruling? This cannot be undone.")) {
+            setIsSaving(true);
+            try {
+                await updateDoc(doc(db, "rulings", rulingId), {
+                    deleted: true,
+                    updated: serverTimestamp(),
+                    updatedBy: currentUser.email,
+                });
+            }
+            catch (err) {
+                console.log(err)
+            };
+            setIsSaving(false);
+
+        }
+    }
     const createRuling = async () => {
         if (newRulingGroup.trim() === "") {
             alert("You must enter a group number for this ruling.");
@@ -45,12 +65,13 @@ export const RoundRulings = () => {
             await addDoc(collection(db, "rulings"), {
                 eventId: eventId,
                 round: parseInt(round, 10),
-                hole: parseInt(newRulingHole, 10),
+                hole: newRulingHole,
                 group: newRulingGroup.trim(),
                 playerName: newRulingPlayerName.trim(),
                 rulesApplied: newRulingRulesApplied.trim(),
                 comment: newRulingComment.trim(),
                 referee: currentUser.email,
+                deleted: false,
                 ruledAt: serverTimestamp(),
                 created: serverTimestamp(),
                 createdBy: currentUser.email,
@@ -86,22 +107,20 @@ export const RoundRulings = () => {
             {
                 roundData.date
                     ? <>
-                        <p className="my-3">
-                            {'Date: '}
-                            <span className="fw-bold">
-                                {getLocalDateFromDb(roundData.date).toLocaleDateString("en-GB", dateOptions)}
-                            </span>
-                        </p>
                         {
                             rulingIds.length
                                 ?
                                 rulingIds.map(rulingId => {
                                     return (
                                         rulings && rulings[rulingId]
-                                            ? <div key={`ruling-${rulingId}`} className="card mb-3">
+                                            ? <div key={`ruling-${rulingId}`} className={`card mb-3 ${isRulingFromCurrentUser(rulings[rulingId]) ? "Ruling-current-referee" : "Ruling-other-referee"}`}>
                                                 <div className="card-body">
                                                     <div>
-                                                        Hole <span className="fw-bold">#{rulings[rulingId].hole}</span>
+                                                        {
+                                                            isNaN(rulings[rulingId].hole)
+                                                                ? <span className="fw-bold">{rulings[rulingId].hole}</span>
+                                                                : (<>Hole <span className="fw-bold">#{rulings[rulingId].hole}</span></>)
+                                                        }
                                                     </div>
                                                     <div>
                                                         Group <span className="fw-bold">#{rulings[rulingId].group}</span>
@@ -115,14 +134,30 @@ export const RoundRulings = () => {
                                                         Additionnal comments: <span className="fw-bold">{rulings[rulingId].comment}</span>
                                                     </div>
                                                 </div>
-                                                <div className="fst-italic card-footer bg-primary-subtle text-dark">
-                                                    Ruled by {rulings[rulingId].referee}
-                                                    {' on '}
-                                                    {
-                                                        rulings[rulingId].ruledAt
-                                                            ? rulings[rulingId].ruledAt.toDate().toLocaleString("en-GB", rulingDateTimeOptions)
-                                                            : ""
-                                                    }
+                                                <div className="fst-italic card-footer text-dark d-flex align-items-center">
+                                                    <div className="flex-grow-1">
+                                                        {'Ruled by '}
+                                                        {referees[rulings[rulingId].referee].firstname}
+                                                        {' '}
+                                                        {referees[rulings[rulingId].referee].lastname}
+                                                        {' on '}
+                                                        {
+                                                            rulings[rulingId].ruledAt
+                                                                ? rulings[rulingId].ruledAt.toDate().toLocaleString("en-GB", rulingDateTimeOptions)
+                                                                : ""
+                                                        }
+                                                    </div>
+                                                    <div>
+                                                        {
+                                                            isRulingFromCurrentUser(rulings[rulingId])
+                                                                ? (
+                                                                    <Button className="float-end" size="sm" variant="primary" onClick={() => deleteRuling(rulingId)} disabled={isSaving}>
+                                                                        <Trash />
+                                                                    </Button>
+                                                                )
+                                                                : ""
+                                                        }
+                                                    </div>
                                                 </div>
                                             </div>
                                             : <></>
@@ -143,11 +178,13 @@ export const RoundRulings = () => {
                                                 placeholder="New event name"
                                                 value={newRulingHole}
                                                 onChange={(e) => setNewRulingHole(e.target.value)}>
+                                                <option key={`hole-0`} value="Before round">Before round</option>
                                                 {
                                                     Array.from({ length: 18 }, (_, i) => i + 1).map(hole => (
                                                         <option key={`hole-${hole}`} value={hole}>{hole}</option>
                                                     ))
                                                 }
+                                                <option key={`hole-19`} value="Recording">Recording</option>
                                             </Form.Select>
                                         </InputGroup>
                                     </Col>
@@ -208,10 +245,8 @@ export const RoundRulings = () => {
                                 <Button variant="outline-primary" onClick={() => createRuling()} disabled={isSaving}>Save Ruling</Button>
                             </div>
                         </div>
-                        <Button onClick={() => navigate(`/events/${eventId}/round/${round}`)} size="sm" className="me-2 my-3">See pin positions</Button>
-                        <Button onClick={() => navigate(`/events/${eventId}/round/${round}/stats`)} size="sm" className="me-2 my-3">See stats</Button>
                     </>
-                    : <Alert variant="warning" className="mt-4">No round configured</Alert>
+                    : ''
             }
 
         </>

@@ -56,7 +56,7 @@ export const UserList = () => {
 
     return (
         <Container fluid>
-            <h2>Users</h2>
+            <h2>Referees</h2>
             <Table striped={true} bordered={true} hover={true} size="sm">
                 <thead>
                     <tr>
@@ -86,7 +86,7 @@ export const UserList = () => {
                 </tbody>
             </Table>
             <hr />
-            <h2>Create new user</h2>
+            <h2>Create new referee</h2>
             <InputGroup className="mb-3">
                 <InputGroup.Text className="">First name</InputGroup.Text>
                 <Form.Control

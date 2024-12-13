@@ -26,6 +26,7 @@ export const Pins = () => {
 
     return (
         <div className="mt-3">
+            <h4>Enter pin positions</h4>
             <Accordion defaultActiveKey={activeHole} className="Pins">
                 {
                     [...Array(18).keys()].map((i => {

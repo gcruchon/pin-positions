@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useOutletContext, useParams, useLocation } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
-import Button from "react-bootstrap/Button";
+import { Pagination } from 'react-bootstrap';
 
-import { Hole } from "./Hole";
 import { getLocalDateFromDb, dateOptions } from '../utils';
 
 import './dots.css'
 
 export const Round = () => {
     const { eventId, round } = useParams();
-    const { eventData, holes } = useOutletContext();
+    const { eventData, holes, rulings, referees } = useOutletContext();
+    const { pathname } = useLocation();
     const [roundData, setRoundData] = useState({ roundDate: null, dotColor: null });
     const navigate = useNavigate();
+
+    const activePage = pathname.split("/").pop();
 
     useEffect(() => {
         const roundIndex = isNaN(round)
@@ -37,15 +39,13 @@ export const Round = () => {
                             {' - Dots: '}
                             <span className={`fw-bold py-1 px-2 rounded-pill dots-${roundData.dotColor}`}>{roundData.dotColor}</span>
                         </p>
+                        <Pagination className="justify-content-center" style={{width: '100%'}}>
+                            <Pagination.Item active={activePage === 'pins'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/pins`)}>Enter pins</Pagination.Item>
+                            <Pagination.Item active={activePage === 'stats'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/stats`)}>Pin stats</Pagination.Item>
+                            <Pagination.Item active={activePage === 'rulings'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/rulings`)}>Rulings</Pagination.Item>
+                        </Pagination>
 
-                        {
-                            [...Array(18).keys()].map((i => {
-                                const hole = holes[`${eventId}|${round}|${i + 1}`] || {}
-                                return (<Hole round={round} hole={i + 1} value={hole} key={`${round}-${i + 1}`} />);
-                            }))
-                        }
-                        <Button onClick={() => navigate(`/events/${eventId}/round/${round}/stats`)} size="sm" className="me-2 my-3">See stats</Button>
-                        <Button onClick={() => navigate(`/events/${eventId}/round/${round}/rulings`)} size="sm" className="me-2 my-3">See rulings</Button>
+                        <Outlet context={{ eventId, eventData, holes, rulings, referees }} />
                     </div>
                     : <Alert variant="warning" className="mt-4">No round configured</Alert>
             }
