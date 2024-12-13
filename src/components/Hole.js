@@ -27,7 +27,7 @@ const DistanceInput = ({ distance, distanceType, saveDistanceToBase }) => {
 
 const SideButton = ({ side, handleSide, getSideButtonClassName }) => {
   return (
-    <button type="button" className={getSideButtonClassName(side)} onClick={async () => await handleSide(side)}>&#160;{side}&#160;</button>
+    <button type="button" className={getSideButtonClassName(side)} onClick={async () => await handleSide(side)}>{side}</button>
   )
 }
 
@@ -42,7 +42,7 @@ export const Hole = ({ round, hole, value, dotColor = "none" }) => {
   const [dbState, setDbState] = useState("saved");
 
   const getSideButtonClassName = (newSide) => {
-    let className = "btn ";
+    let className = "btn side ";
     if (newSide === side) {
       className += "btn-primary";
     } else {
@@ -123,10 +123,10 @@ export const Hole = ({ round, hole, value, dotColor = "none" }) => {
           <Link className="Hole-link" to={`/events/${eventId}/round/${round}/hole/${hole}/history${isShowingAllPins() ? '#fromPins' : ''}`}>
             {
               isShowingAllPins()
-                ? `R${round} - `
+                ? <span className="round">R{round} </span>
                 : ""
             }
-            {'# '}{hole}
+            {'#'}{hole}
           </Link>
         </InputGroup.Text>
         <DistanceInput distance={distanceFromFront} distanceType="fromFront" saveDistanceToBase={saveDistanceToBase} />

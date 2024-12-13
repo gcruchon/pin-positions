@@ -7,3 +7,6 @@
   color: var(--bs-body-color);
   text-decoration: none;
 }
+.Hole-link .round {
+  font-size: 70%;
+}
