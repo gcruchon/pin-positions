@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import { Hole } from "./Hole";
 
 import './dots.css'
+import './Pins.css'
 
 export const Pins = () => {
     const { eventId } = useParams();
@@ -25,12 +26,12 @@ export const Pins = () => {
 
     return (
         <div className="mt-3">
-            <Accordion defaultActiveKey={activeHole}>
+            <Accordion defaultActiveKey={activeHole} className="Pins">
                 {
                     [...Array(18).keys()].map((i => {
                         return (
                             <Accordion.Item eventKey={i + 1} key={`accordion-${i + 1}`}>
-                                <Accordion.Header>Hole N°{i + 1}</Accordion.Header>
+                                <Accordion.Header className="fw-bold">Hole #{i + 1}</Accordion.Header>
                                 <Accordion.Body>
                                     {
                                         rounds ?

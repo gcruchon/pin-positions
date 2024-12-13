@@ -51,7 +51,7 @@ export const Hole = ({ round, hole, value, dotColor = "none" }) => {
     return className;
   }
 
-  const isShowingAllPins = () => {
+  const isShowingAllRounds = () => {
     return pathname.split("/").pop() === 'pins';
   }
 
@@ -120,13 +120,12 @@ export const Hole = ({ round, hole, value, dotColor = "none" }) => {
     <div className={`mb-4 Hole-db-${dbState}`}>
       <InputGroup>
         <InputGroup.Text id="basic-addon2" className={`dots-${dotColor}`}>
-          <Link className="Hole-link" to={`/events/${eventId}/round/${round}/hole/${hole}/history${isShowingAllPins() ? '#fromPins' : ''}`}>
+          <Link className="Hole-link" to={`/events/${eventId}/round/${round}/hole/${hole}/history${isShowingAllRounds() ? '#fromPins' : ''}`}>
             {
-              isShowingAllPins()
-                ? <span className="round">R{round} </span>
-                : ""
+              isShowingAllRounds()
+                ? `R${round}`
+                : `# ${hole}`
             }
-            {'#'}{hole}
           </Link>
         </InputGroup.Text>
         <DistanceInput distance={distanceFromFront} distanceType="fromFront" saveDistanceToBase={saveDistanceToBase} />

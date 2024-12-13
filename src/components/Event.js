@@ -106,7 +106,7 @@ export const Event = () => {
                                     ? "active font-weight-bold"
                                     : ""
                             }
-                            onClick={(e) => navigate(`/events/${eventId}/pins`)}>All pins</Nav.Link>
+                            onClick={(e) => navigate(`/events/${eventId}/pins`)}>All rounds</Nav.Link>
                     </Nav.Item>
                     {
                         eventData.rounds
