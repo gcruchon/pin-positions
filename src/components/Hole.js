@@ -52,7 +52,7 @@ export const Hole = ({ round, hole, value, dotColor = "none" }) => {
   }
 
   const isShowingAllRounds = () => {
-    return pathname.split("/").pop() === 'pins';
+    return pathname.indexOf("/round/") === -1;
   }
 
   const handleSide = async (newSide) => {
