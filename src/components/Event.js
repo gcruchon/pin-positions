@@ -7,6 +7,7 @@ import Nav from 'react-bootstrap/Nav';
 import { collection, where, query, onSnapshot, doc, getDoc, and, orderBy } from 'firebase/firestore';
 
 import { db } from '../firebase';
+import { Pencil } from 'react-bootstrap-icons';
 
 export const Event = () => {
     const { eventId, round: displayedRound } = useParams();
@@ -112,7 +113,10 @@ export const Event = () => {
                     {eventData.name}
                     {' '}
                     <Link to={`/events/${eventId}/details`}>
-                        <Button variant="outline-primary" size="sm" className="ms-2">Edit event</Button>
+                        <Button variant="outline-primary" size="sm" className="ms-2">
+                            <Pencil />
+                            <span className="visually-hidden">Edit event</span>
+                        </Button>
                     </Link>
                 </h2>
                 <Nav variant="tabs" defaultActiveKey="/">

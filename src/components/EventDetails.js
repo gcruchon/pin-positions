@@ -15,6 +15,7 @@ import { db } from '../firebase';
 import { useAuth } from '../hooks';
 import { getLocalDateFromDb, getDbDateFromLocalDate, validateEmail } from '../utils';
 import './EventDetails.css';
+import { Plus, Trash } from 'react-bootstrap-icons';
 
 export const EventDetails = () => {
     const { eventId } = useParams();
@@ -182,7 +183,10 @@ export const EventDetails = () => {
                             <h5>Rounds</h5>
                         </div>
                         <div className="p-2">
-                            <Button variant="outline-primary" size="sm" onClick={() => addRound()}>Add round</Button>
+                            <Button variant="outline-primary" size="sm" onClick={() => addRound()}>
+                                <Plus />
+                                <span className="visually-hidden">Add round</span>
+                            </Button>
                         </div>
                     </div>
                     {
@@ -222,7 +226,10 @@ export const EventDetails = () => {
                                                 variant="outline-primary"
                                                 size="sm"
                                                 data-round={roundIndex}
-                                                onClick={(e) => removeRound(parseInt(e.target.dataset.round, 10))}>Remove round</Button>
+                                                onClick={(e) => removeRound(parseInt(e.target.dataset.round, 10))}>
+                                                <Trash />
+                                                <span className="visually-hidden">Remove round</span>
+                                            </Button>
                                         </Col>
                                     </Row>);
                             })
@@ -244,7 +251,10 @@ export const EventDetails = () => {
                                             variant="outline-primary"
                                             size="sm"
                                             data-email={ownerEmail}
-                                            onClick={(e) => removeOwner(e.target.dataset.email)}>Remove</Button>
+                                            onClick={(e) => removeOwner(e.target.dataset.email)}>
+                                            <Trash />
+                                            <span className="visually-hidden">Remove owner</span>
+                                        </Button>
                                     </ListGroup.Item>)
                                 })
                                 : ""
@@ -261,7 +271,10 @@ export const EventDetails = () => {
                                             variant="outline-dark"
                                             size="sm"
                                             data-email={editorEmail}
-                                            onClick={(e) => removeEditor(e.target.dataset.email)}>Remove</Button>
+                                            onClick={(e) => removeEditor(e.target.dataset.email)}>
+                                            <Trash />
+                                            <span className="visually-hidden">Remove editor</span>
+                                        </Button>
                                     </ListGroup.Item>)
                                 })
                                 : ""
