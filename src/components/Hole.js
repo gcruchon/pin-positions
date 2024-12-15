@@ -119,7 +119,7 @@ export const Hole = ({ round, hole, value, dotColor = "none" }) => {
   return (
     <div className={`mb-4 Hole-db-${dbState}`}>
       <InputGroup>
-        <InputGroup.Text id="basic-addon2" className={`dots-${dotColor}`}>
+        <InputGroup.Text className={`dots-${dotColor}`}>
           <Link className="Hole-link" to={`/events/${eventId}/round/${round}/hole/${hole}/history${isShowingAllRounds() ? '#fromPins' : ''}`}>
             {
               isShowingAllRounds()
@@ -129,7 +129,7 @@ export const Hole = ({ round, hole, value, dotColor = "none" }) => {
           </Link>
         </InputGroup.Text>
         <DistanceInput distance={distanceFromFront} distanceType="fromFront" saveDistanceToBase={saveDistanceToBase} />
-        <InputGroup.Text id="basic-addon2"> - </InputGroup.Text>
+        <InputGroup.Text> - </InputGroup.Text>
         <DistanceInput distance={distanceFromSide} distanceType="fromSide" saveDistanceToBase={saveDistanceToBase} />
         <SideButton side={'L'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
         <SideButton side={'C'} handleSide={handleSide} getSideButtonClassName={getSideButtonClassName} />
