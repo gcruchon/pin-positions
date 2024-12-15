@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigate, useOutletContext, useParams, useLocation } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
-import { Pagination } from 'react-bootstrap';
+import Pagination from 'react-bootstrap/Pagination';
 
 import { getLocalDateFromDb, dateOptions } from '../utils';
 
