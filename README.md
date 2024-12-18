@@ -9,3 +9,6 @@ For example is one team is working on holes 1-9 and another team is working on h
 ## License
 
 This tool is licensed under Apache 2.0 license.
+
+See the `NOTICE.md` file for required notices and attributions.
+
