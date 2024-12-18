@@ -7,6 +7,9 @@ service cloud.firestore {
     }
 
     // Only connected users can read/write
+    match /courses/{document=**} {
+      allow read, write: if request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.token.email));
+    }
     match /events/{document=**} {
       allow read, write: if request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.token.email));
     }

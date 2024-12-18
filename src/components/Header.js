@@ -18,6 +18,8 @@ export const Header = () => {
                 {' - '}
                 <NavLink to="/events">Events</NavLink>
                 {' - '}
+                <NavLink to="/courses">Courses</NavLink>
+                {' - '}
                 <NavLink to="/users">Referees</NavLink>
             </nav>
             {

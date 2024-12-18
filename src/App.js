@@ -5,23 +5,27 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import { requireAuth } from './requireAuth';
 import { AuthLayout } from './components/AuthLayout'
+import { Course } from './components/Course'
+import { CourseDetails } from './components/CourseDetails';
+import { CourseList } from './components/CourseList'
+import { CourseTimePar } from './components/CourseTimePar';
 import { Event } from './components/Event'
 import { EventList } from './components/EventList'
 import { EventDetails } from './components/EventDetails';
-import { Login, loader as loginLoader } from './components/Login';
-import { Welcome } from './components/Welcome';
-
-import { requireAuth } from './requireAuth';
-
-import './App.css';
 import { HoleHistory } from './components/HoleHistory';
-import { UserList } from './components/UserList';
+import { Login, loader as loginLoader } from './components/Login';
 import { Pins } from './components/Pins';
 import { Round } from './components/Round';
 import { RoundPins } from './components/RoundPins';
 import { RoundStats } from './components/RoundStats';
 import { RoundRulings } from './components/RoundRulings';
+import { UserList } from './components/UserList';
+import { Welcome } from './components/Welcome';
+
+import './App.css';
+
 
 const router = createBrowserRouter([
   {
@@ -41,6 +45,32 @@ const router = createBrowserRouter([
         path: "users",
         element: <UserList />,
         loader: async ({ request }) => await requireAuth(request),
+      },
+      {
+        path: "courses",
+        element: <CourseList />,
+        loader: async ({ request }) => await requireAuth(request),
+      },
+      {
+        path: "courses/:courseId",
+        element: <Course />,
+        loader: async ({ request }) => await requireAuth(request),
+        children: [
+          {
+            index: true,
+            element: <Navigate to="details" replace />,
+          },
+          {
+            path: "details",
+            element: <CourseDetails />,
+            loader: async ({ request }) => await requireAuth(request),
+          },
+          {
+            path: "timepar",
+            element: <CourseTimePar />,
+            loader: async ({ request }) => await requireAuth(request),
+          },
+        ]
       },
       {
         path: "events",

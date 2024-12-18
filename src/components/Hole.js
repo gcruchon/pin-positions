@@ -7,7 +7,7 @@ import InputGroup from 'react-bootstrap/InputGroup'
 
 import { useAuth } from '../hooks';
 import './Hole.css';
-import './dots.css'
+import './dots.css';
 
 const DistanceInput = ({ distance, distanceType, saveDistanceToBase }) => {
   const initialDistance = distance;
