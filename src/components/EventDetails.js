@@ -145,10 +145,8 @@ export const EventDetails = () => {
         <>
             <Container className={eventPageStatus === "event-exists" ? "" : "d-none"} fluid>
                 <div className="d-flex flex-row">
-                    <div className="p-2">
-                        <h5>Event details</h5>
-                    </div>
-                    <div className={showToast ? "p-2" : "d-none"}>
+                    <h5>Event details</h5>
+                    <div className={showToast ? "ps-2" : "d-none"}>
                         [Saving...]
                     </div>
                 </div>
@@ -179,10 +177,8 @@ export const EventDetails = () => {
                     </Form.Group>
                     <hr />
                     <div className="d-flex flex-row">
-                        <div className="p-2">
-                            <h5>Rounds</h5>
-                        </div>
-                        <div className="p-2">
+                        <h5>Rounds</h5>
+                        <div className="ps-2">
                             <Button variant="outline-primary" size="sm" onClick={() => addRound()}>
                                 <Plus />
                                 <span className="visually-hidden">Add round</span>
