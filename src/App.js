@@ -25,6 +25,7 @@ import { UserList } from './components/UserList';
 import { Welcome } from './components/Welcome';
 
 import './App.css';
+import { RoundDraw } from './components/RoundDraw';
 
 
 const router = createBrowserRouter([
@@ -113,6 +114,11 @@ const router = createBrowserRouter([
               {
                 path: "rulings",
                 element: <RoundRulings />,
+                loader: async ({ request }) => await requireAuth(request),
+              },
+              {
+                path: "draw",
+                element: <RoundDraw />,
                 loader: async ({ request }) => await requireAuth(request),
               },
             ]
