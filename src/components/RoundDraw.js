@@ -33,7 +33,7 @@ export const RoundDraw = () => {
 
     const getLastTeeTimeForDraw = (draw) => {
         if (draw.startingTime && draw.numberOfGroups && draw.startingInterval) {
-            const firstTeeTime = new Date(`2024-01-01T${draw.startingTime}:00`);
+            const firstTeeTime = new Date(`2025-01-01T${draw.startingTime}:00`);
             const lastTeeTime = new Date(firstTeeTime.getTime() + ((draw.numberOfGroups - 1) * draw.startingInterval * 60000));
             return lastTeeTime.toLocaleTimeString("en-GB", { hour: '2-digit', minute: '2-digit' });
         } else {
