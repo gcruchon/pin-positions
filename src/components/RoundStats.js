@@ -3,8 +3,6 @@ import { useOutletContext, useParams } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Table from 'react-bootstrap/Table';
 
-import './dots.css'
-
 export const RoundStats = () => {
     const { eventId, round } = useParams();
     const { eventData, holes } = useOutletContext();
