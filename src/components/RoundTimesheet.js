@@ -16,18 +16,63 @@ import { useAuth } from '../hooks';
 
 import './RoundTimesheet.css'
 
+const timeWithAddedMinutes = (time, minutes) => {
+    const newDate = new Date(new Date(`2025-01-01T${time}:00`).getTime() + minutes * 60 * 1000);
+    return newDate.toLocaleTimeString("en-GB", { hour: '2-digit', minute: '2-digit' });
+}
+
+const diffInMinutes = (time1, time2) => {
+    const date1 = new Date(`2025-01-01T${time1}:00`);
+    const date2 = new Date(`2025-01-01T${time2}:00`);
+    return Math.trunc((date2 - date1) / (60 * 1000));
+}
+
+const timeIsAfter = (refTime, time) => {
+    return diffInMinutes(refTime, time) > 0;
+}
+
+const shiftTimesFromStartForTeeTime = (timesheet, teeTime, offset) => {
+    const newTimesheet = { ...timesheet };
+    if (offset >= 0) {
+        Object.keys(newTimesheet[teeTime].timing).forEach(hole => {
+            if (hole !== 'start') {
+                const originalAppliedOffset = newTimesheet[teeTime].timing[hole].appliedOffset || 0;
+                if (offset !== originalAppliedOffset) {
+                    const originalExpected = newTimesheet[teeTime].timing[hole].expected;
+                    newTimesheet[teeTime].timing[hole].expected = timeWithAddedMinutes(originalExpected, offset - originalAppliedOffset);
+                    newTimesheet[teeTime].timing[hole].appliedOffset = offset;
+                }
+            }
+        });
+    }
+    return newTimesheet;
+}
 
 const UpdateTimeModal = ({ handleCloseTime, timesheets, saveTimesheet, drawId, teeTime, hole }) => {
     const [groupNumber, setGroupNumber] = useState(null);
     const [expected, setExpected] = useState(null);
     const [actual, setActual] = useState(null);
+    const [updateFollowingTeeTimes, setUpdateFollowingTeeTimes] = useState("0");
     const [comment, setComment] = useState('');
 
     const saveTime = async () => {
-        const newTimesheets = { ...timesheets };
-        newTimesheets[drawId][teeTime].timing[hole].actual = actual;
-        newTimesheets[drawId][teeTime].timing[hole].comment = '' + comment;
-        saveTimesheet(drawId, newTimesheets[drawId]);
+        let timesheetForDraw = { ...timesheets[drawId] };
+        timesheetForDraw[teeTime].timing[hole].actual = actual;
+        timesheetForDraw[teeTime].timing[hole].comment = '' + comment;
+
+        if (hole === 'start') {
+            const latenessInMinutes = diffInMinutes(expected, actual);
+            timesheetForDraw = shiftTimesFromStartForTeeTime(timesheetForDraw, teeTime, latenessInMinutes);
+            if (updateFollowingTeeTimes === "1") {
+                Object.keys(timesheetForDraw).forEach(tt => {
+                    if (timeIsAfter(teeTime, tt)) {
+                        timesheetForDraw[tt].timing.start.actual = timeWithAddedMinutes(timesheetForDraw[tt].timing.start.expected, latenessInMinutes);
+                        timesheetForDraw = shiftTimesFromStartForTeeTime(timesheetForDraw, tt, latenessInMinutes);
+                    }
+                });
+            }
+        }
+        saveTimesheet(drawId, timesheetForDraw);
         handleCloseTime();
     }
 
@@ -40,9 +85,10 @@ const UpdateTimeModal = ({ handleCloseTime, timesheets, saveTimesheet, drawId, t
             actual = expected;
         }
         setActual(actual);
-        if( comment ) {
+        if (comment) {
             setComment(comment);
         }
+        setUpdateFollowingTeeTimes(hole === 'start' ? "1" : "0");
     }, [drawId, hole, teeTime, timesheets]);
 
     return (
@@ -61,11 +107,11 @@ const UpdateTimeModal = ({ handleCloseTime, timesheets, saveTimesheet, drawId, t
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <InputGroup className="mb-3">
+                <InputGroup>
                     <InputGroup.Text>Expected</InputGroup.Text>
                     <InputGroup.Text className="fw-bold">{expected}</InputGroup.Text>
                 </InputGroup>
-                <InputGroup className="mb-3">
+                <InputGroup className="mt-3">
                     <InputGroup.Text>Actual</InputGroup.Text>
                     <Form.Control
                         type="time"
@@ -73,7 +119,25 @@ const UpdateTimeModal = ({ handleCloseTime, timesheets, saveTimesheet, drawId, t
                         value={actual}
                         onChange={(e) => setActual(e.target.value)} />
                 </InputGroup>
-                <InputGroup>
+                {
+                    hole === 'start'
+                        ? (
+
+                            <InputGroup className="mt-3">
+                                <InputGroup.Text>Update all following tee times</InputGroup.Text>
+                                <Form.Select
+                                    aria-label="Update all following tee times"
+                                    value={updateFollowingTeeTimes}
+                                    onChange={(e) => setUpdateFollowingTeeTimes(e.target.value)}
+                                >
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </Form.Select>
+                            </InputGroup>
+                        )
+                        : ''
+                }
+                <InputGroup className="mt-3">
                     <InputGroup.Text>Comment</InputGroup.Text>
                     <Form.Control
                         as="textarea"
@@ -91,16 +155,13 @@ const UpdateTimeModal = ({ handleCloseTime, timesheets, saveTimesheet, drawId, t
     )
 }
 
-const TimingForHole = ({ timing }) => {
+const TimingForHole = ({ timing, isStart = false }) => {
     const [diff, setDiff] = useState(0);
     const [comment, setComment] = useState('');
 
     useEffect(() => {
         if (timing.actual) {
-            const expectedTime = new Date(`2025-01-01T${timing.expected}:00`);
-            const actualTime = new Date(`2025-01-01T${timing.actual}:00`);
-            const diffInMinutes = Math.trunc((actualTime - expectedTime) / (60 * 1000));
-            setDiff(diffInMinutes);
+            setDiff(diffInMinutes(timing.expected, timing.actual));
         } else {
             setDiff(null);
         }
@@ -308,8 +369,9 @@ export const RoundTimesheet = () => {
                                                                     key={`timesheet-${drawId}-${time}-start`}
                                                                     className={`${index % 2 === 1 ? 'bg-info' : ''}`}
                                                                     style={index % 2 === 1 ? { '--bs-bg-opacity': .15 } : {}}
-                                                                    onClick={e => handleShowTime(drawId, time, 'start')}>
-                                                                    {timesheets[drawId][time].timing.start.expected}
+                                                                    onClick={e => handleShowTime(drawId, time, 'start')}
+                                                                >
+                                                                    <TimingForHole timing={timesheets[drawId][time].timing.start} />
                                                                 </td>
                                                                 {
                                                                     [...Array(18).keys()].map((i => (
