@@ -245,7 +245,7 @@ export const RoundTimesheet = () => {
                     const teeTime = new Date(firstTeeTime.getTime() + (i * startingInterval * 60000));
                     const currentTime = teeTime.toLocaleTimeString("en-GB", { hour: '2-digit', minute: '2-digit' })
                     emptyTimesheet[currentTime] = {
-                        groupNumer: currentGroupNumber + i,
+                        groupNumber: currentGroupNumber + i,
                         timing: getEmptyTiming(currentTime, startingTee, timePar)
                     };
                 }
@@ -302,7 +302,7 @@ export const RoundTimesheet = () => {
                                                         Object.keys(timesheets[drawId]).sort().map((time, index) => (
                                                             <tr key={`timesheet-${drawId}-${time}`}>
                                                                 <th scope="row" className={`${index % 2 === 1 ? 'bg-info' : ''}`} style={index % 2 === 1 ? { '--bs-bg-opacity': .15 } : {}}>
-                                                                    #{timesheets[drawId][time].groupNumer}
+                                                                    #{timesheets[drawId][time].groupNumber}
                                                                 </th>
                                                                 <td
                                                                     key={`timesheet-${drawId}-${time}-start`}
