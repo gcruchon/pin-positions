@@ -44,6 +44,7 @@ export const Round = () => {
                             <Pagination.Item active={activePage === 'stats'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/stats`)}>Pin stats</Pagination.Item>
                             <Pagination.Item active={activePage === 'rulings'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/rulings`)}>Rulings</Pagination.Item>
                             <Pagination.Item active={activePage === 'draw'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/draw`)}>Draw</Pagination.Item>
+                            <Pagination.Item active={activePage === 'timesheet'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/timesheet`)}>Timesheet</Pagination.Item>
                         </Pagination>
 
                         <Outlet context={{ eventId, eventData, holes, rulings, referees }} />

@@ -18,14 +18,15 @@ import { HoleHistory } from './components/HoleHistory';
 import { Login, loader as loginLoader } from './components/Login';
 import { Pins } from './components/Pins';
 import { Round } from './components/Round';
+import { RoundDraw } from './components/RoundDraw';
 import { RoundPins } from './components/RoundPins';
 import { RoundStats } from './components/RoundStats';
 import { RoundRulings } from './components/RoundRulings';
+import { RoundTimesheet } from './components/RoundTimesheet';
 import { UserList } from './components/UserList';
 import { Welcome } from './components/Welcome';
 
 import './App.css';
-import { RoundDraw } from './components/RoundDraw';
 
 
 const router = createBrowserRouter([
@@ -119,6 +120,11 @@ const router = createBrowserRouter([
               {
                 path: "draw",
                 element: <RoundDraw />,
+                loader: async ({ request }) => await requireAuth(request),
+              },
+              {
+                path: "timesheet",
+                element: <RoundTimesheet />,
                 loader: async ({ request }) => await requireAuth(request),
               },
             ]

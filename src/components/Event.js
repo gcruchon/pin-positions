@@ -30,6 +30,10 @@ export const Event = () => {
             setSuffix("/stats");
         } else if (path.pathname.slice(-8) === "/rulings") {
             setSuffix("/rulings");
+        } else if (path.pathname.slice(-5) === "/draw") {
+            setSuffix("/draw");
+        } else if (path.pathname.slice(-10) === "/timesheet") {
+            setSuffix("/timesheet");
         } else {
             setSuffix("");
         }

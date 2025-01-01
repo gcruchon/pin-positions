@@ -1,0 +1,10 @@
+.Timesheet-late {
+  color: var(--bs-danger);
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.Timesheet-on-time {
+  color: var(--bs-success);
+  white-space: nowrap;
+}
