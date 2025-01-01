@@ -144,12 +144,21 @@ const router = createBrowserRouter([
     ]
   },
 
-]);
+], {
+  future: {
+    v7_relativeSplatPath: true,
+    v7_skipActionErrorRevalidation: true,
+  },
+});
 
 const App = () => {
   return (
     <React.StrictMode>
-      <RouterProvider router={router} />
+      <RouterProvider
+        router={router}
+        future={{
+          v7_startTransition: true,
+        }} />
     </React.StrictMode>
   );
 }
