@@ -22,7 +22,6 @@ export const Pins = () => {
     const activeHole = hash && hash.split("_").length
         ? parseInt(hash.split("_").pop(), 10)
         : 1;
-    console.log(activeHole);
 
     return (
         <div className="mt-3">

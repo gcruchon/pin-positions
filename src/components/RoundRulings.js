@@ -159,7 +159,6 @@ export const RoundRulings = () => {
     const cancelUpdateRuling = () => setUpdatedRuling(null);
     const updateRuling = async () => {
         const rulingId = updatedRuling.id;
-        console.log(rulingId);
         setIsSaving(true);
         try {
             await updateDoc(doc(db, "rulings", rulingId), {
@@ -169,7 +168,7 @@ export const RoundRulings = () => {
             });
         }
         catch (err) {
-            console.log(err)
+            console.error(err)
         };
         setIsSaving(false);
         setUpdatedRuling(null)
@@ -185,7 +184,7 @@ export const RoundRulings = () => {
                 });
             }
             catch (err) {
-                console.log(err)
+                console.error(err)
             };
             setIsSaving(false);
         }
@@ -222,7 +221,7 @@ export const RoundRulings = () => {
             setNewRuling({ hole: "1", group: "", playerName: "", rulesApplied: "", comment: "" });
         }
         catch (err) {
-            console.log(err)
+            console.error(err)
         };
         setIsSaving(false);
     }

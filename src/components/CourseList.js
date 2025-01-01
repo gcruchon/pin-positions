@@ -39,7 +39,6 @@ export const CourseList = () => {
             const coursesRef = collection(db, "courses");
             const unsubscribe = onSnapshot(coursesRef, (querySnapshot) => {
                 let courses = {};
-                console.log("querySnapshot", querySnapshot);
                 querySnapshot.forEach((doc) => {
                     courses[doc.id] = doc.data();
                 });
