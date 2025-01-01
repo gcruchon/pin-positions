@@ -21,12 +21,12 @@ const UpdateTimeModal = ({ handleCloseTime, timesheets, saveTimesheet, drawId, t
     const [groupNumber, setGroupNumber] = useState(null);
     const [expected, setExpected] = useState(null);
     const [actual, setActual] = useState(null);
-    const [comment, setComment] = useState(null);
+    const [comment, setComment] = useState('');
 
     const saveTime = async () => {
         const newTimesheets = { ...timesheets };
         newTimesheets[drawId][teeTime].timing[hole].actual = actual;
-        newTimesheets[drawId][teeTime].timing[hole].comment = comment;
+        newTimesheets[drawId][teeTime].timing[hole].comment = '' + comment;
         saveTimesheet(drawId, newTimesheets[drawId]);
         handleCloseTime();
     }
@@ -40,7 +40,9 @@ const UpdateTimeModal = ({ handleCloseTime, timesheets, saveTimesheet, drawId, t
             actual = expected;
         }
         setActual(actual);
-        setComment(comment);
+        if( comment ) {
+            setComment(comment);
+        }
     }, [drawId, hole, teeTime, timesheets]);
 
     return (
