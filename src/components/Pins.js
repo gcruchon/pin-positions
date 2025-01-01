@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useOutletContext, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams, useLocation } from 'react-router';
 import Accordion from 'react-bootstrap/Accordion';
 import Button from "react-bootstrap/Button";
 

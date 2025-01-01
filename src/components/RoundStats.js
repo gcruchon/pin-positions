@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useOutletContext, useParams } from 'react-router';
 import Alert from 'react-bootstrap/Alert';
 import Table from 'react-bootstrap/Table';
 

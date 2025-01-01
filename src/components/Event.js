@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, Outlet, useNavigate, useResolvedPath } from 'react-router-dom';
+import { useParams, Link, Outlet, useNavigate, useResolvedPath } from 'react-router';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';

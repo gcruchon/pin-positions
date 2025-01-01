@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router';
 import Alert from 'react-bootstrap/Alert';
 import Badge from 'react-bootstrap/Badge'
 import Button from 'react-bootstrap/Button';

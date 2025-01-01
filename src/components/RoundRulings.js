@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useOutletContext, useParams } from 'react-router';
 import Alert from 'react-bootstrap/Alert';
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";

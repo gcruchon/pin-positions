@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
-
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { requireAuth } from './requireAuth';
 import { AuthLayout } from './components/AuthLayout'
 import { Course } from './components/Course'
@@ -127,6 +122,16 @@ const router = createBrowserRouter([
                 element: <RoundTimesheet />,
                 loader: async ({ request }) => await requireAuth(request),
               },
+              // {
+              //   path: "timesheet/draw/:drawId/group/:groupNumber",
+              //   element: <RoundTimesheetGroup />,
+              //   loader: async ({ request }) => await requireAuth(request),
+              // },
+              // {
+              //   path: "timesheet/draw/:drawId/group/:groupNumber",
+              //   element: <RoundTimesheetH />,
+              //   loader: async ({ request }) => await requireAuth(request),
+              // },
             ]
           },
         ]
@@ -144,21 +149,13 @@ const router = createBrowserRouter([
     ]
   },
 
-], {
-  future: {
-    v7_relativeSplatPath: true,
-    v7_skipActionErrorRevalidation: true,
-  },
-});
+]);
 
 const App = () => {
   return (
     <React.StrictMode>
       <RouterProvider
-        router={router}
-        future={{
-          v7_startTransition: true,
-        }} />
+        router={router} />
     </React.StrictMode>
   );
 }
