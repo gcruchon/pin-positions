@@ -33,6 +33,10 @@
         {
           "fieldPath": "startingTime",
           "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startingTee",
+          "order": "ASCENDING"
         }
       ]
     }

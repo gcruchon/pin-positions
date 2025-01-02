@@ -128,7 +128,7 @@ export const RoundDraw = () => {
 
     useEffect(() => {
         const drawsRef = collection(db, "draws");
-        const q = query(drawsRef, and(where("eventId", "==", eventId), where("round", "==", parseInt(round, 10))), orderBy("startingTime", "asc"));
+        const q = query(drawsRef, and(where("eventId", "==", eventId), where("round", "==", parseInt(round, 10))), orderBy("startingTime", "asc"), orderBy("startingTee", "asc"));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             let drawsFromDb = {};
 
