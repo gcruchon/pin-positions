@@ -173,17 +173,31 @@ const TimingForHole = ({ timing, isStart = false }) => {
     }, [timing]);
 
     return (
-        <span className={
-            diff === null
-                ? ''
-                : diff > 0
-                    ? 'Timesheet-late' : 'Timesheet-on-time'
-        }>
-            {
-                timing.actual
-                    ? `${timing.actual} (${diff > 0 ? '+' : ''}${diff})`
-                    : timing.expected
-            }
+        <>
+            <span className={
+                diff === null || isStart
+                    ? ''
+                    : diff > 0
+                        ? 'Timesheet-late' : 'Timesheet-on-time'
+            }>
+                {
+                    timing.actual
+                        ? timing.actual
+                        : timing.expected
+                }
+            </span>
+            <span className={
+                diff === null
+                    ? ''
+                    : diff > 0
+                        ? 'Timesheet-late' : 'Timesheet-on-time'
+            }>
+                {
+                    timing.actual
+                        ? ` (${diff > 0 ? '+' : ''}${diff})`
+                        : ''
+                }
+            </span>
             {
                 comment !== ''
                     ? (
@@ -204,7 +218,8 @@ const TimingForHole = ({ timing, isStart = false }) => {
                     )
                     : ''
             }
-        </span>)
+        </>
+    )
 }
 
 export const RoundTimesheet = () => {
@@ -367,17 +382,17 @@ export const RoundTimesheet = () => {
                                                                 </th>
                                                                 <td
                                                                     key={`timesheet-${drawId}-${time}-start`}
-                                                                    className={`${index % 2 === 1 ? 'bg-info' : ''}`}
+                                                                    className={`Timesheet-timing ${index % 2 === 1 ? 'bg-info' : ''}`}
                                                                     style={index % 2 === 1 ? { '--bs-bg-opacity': .15 } : {}}
                                                                     onClick={e => handleShowTime(drawId, time, 'start')}
                                                                 >
-                                                                    <TimingForHole timing={timesheets[drawId][time].timing.start} />
+                                                                    <TimingForHole timing={timesheets[drawId][time].timing.start} isStart={true} />
                                                                 </td>
                                                                 {
                                                                     [...Array(18).keys()].map((i => (
                                                                         <td
                                                                             key={`timesheet-${drawId}-${time}-${i + 1}`}
-                                                                            className={`${index % 2 === 1 ? 'bg-info' : ''}`}
+                                                                            className={`Timesheet-timing ${index % 2 === 1 ? 'bg-info' : ''}`}
                                                                             style={index % 2 === 1 ? { '--bs-bg-opacity': .15 } : {}}
                                                                             onClick={e => handleShowTime(drawId, time, i + 1)}
                                                                         >
@@ -387,7 +402,7 @@ export const RoundTimesheet = () => {
                                                                 }
                                                                 <td
                                                                     key={`timesheet-${drawId}-${time}-recording`}
-                                                                    className={`${index % 2 === 1 ? 'bg-info' : ''}`}
+                                                                    className={`Timesheet-timing ${index % 2 === 1 ? 'bg-info' : ''}`}
                                                                     style={index % 2 === 1 ? { '--bs-bg-opacity': .15 } : {}}
                                                                     onClick={e => handleShowTime(drawId, time, 'recording')}>
                                                                     {timesheets[drawId][time].timing.recording.expected}
