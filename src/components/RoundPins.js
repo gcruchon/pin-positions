@@ -1,40 +1,26 @@
-import { useEffect, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router';
+import { Outlet } from 'react-router';
+import { useOutletContext, useNavigate, useParams, useLocation } from 'react-router';
 
-import { Hole } from "./Hole";
+import Pagination from 'react-bootstrap/Pagination';
 
-import './dots.css'
+import './submenu.css'
 
 export const RoundPins = () => {
     const { eventId, round } = useParams();
     const { eventData, holes } = useOutletContext();
-    const [roundData, setRoundData] = useState({ roundDate: null, dotColor: null });
+    const { pathname } = useLocation();
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        const roundIndex = isNaN(round)
-            ? 0
-            : parseInt(round, 10);
-        if (roundIndex > 0 && eventData.rounds && eventData.rounds.length >= roundIndex) {
-            setRoundData(eventData.rounds[roundIndex - 1]);
-        }
-    }, [eventData.rounds, round]);
-
+    const activePage = pathname.split("/").pop();
 
     return (
         <>
-            {
-                roundData.date
-                    ? <>
-                        {
-                            [...Array(18).keys()].map((i => {
-                                const hole = holes[`${eventId}|${round}|${i + 1}`] || {}
-                                return (<Hole round={round} hole={i + 1} value={hole} key={`${round}-${i + 1}`} />);
-                            }))
-                        }
-                    </>
-                    : ""
-            }
+            <Pagination className="submenu justify-content-center" style={{ width: '100%' }}>
+                <Pagination.Item active={activePage === 'edit'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/pins/edit`)}>Edit pins</Pagination.Item>
+                <Pagination.Item active={activePage === 'stats'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/pins/stats`)}>See stats</Pagination.Item>
+            </Pagination>
 
+            <Outlet context={{ eventData, holes }} />
         </>
     );
 }

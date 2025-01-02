@@ -13,7 +13,7 @@ import { useAuth } from '../hooks';
 
 import { db } from '../firebase';
 
-export const RoundDraw = () => {
+export const RoundTimesheetDraw = () => {
     const { currentUser } = useAuth();
     const { eventId, round } = useParams();
 

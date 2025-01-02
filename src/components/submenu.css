@@ -1,0 +1,8 @@
+.submenu.pagination .page-item .page-link {
+  color: var(--bs-secondary);
+}
+.submenu.pagination .page-item.active .page-link {
+  color: #fff;
+  background: var(--bs-secondary);
+  border-color: var(--bs-secondary);
+}

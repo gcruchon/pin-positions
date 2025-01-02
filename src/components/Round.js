@@ -14,7 +14,7 @@ export const Round = () => {
     const [roundData, setRoundData] = useState({ roundDate: null, dotColor: null });
     const navigate = useNavigate();
 
-    const activePage = pathname.split("/").pop();
+    const activePage = pathname.split("/")[5];
 
     useEffect(() => {
         const roundIndex = isNaN(round)
@@ -40,10 +40,8 @@ export const Round = () => {
                             <span className={`fw-bold py-1 px-2 rounded-pill dots-${roundData.dotColor}`}>{roundData.dotColor}</span>
                         </p>
                         <Pagination className="justify-content-center" style={{width: '100%'}}>
-                            <Pagination.Item active={activePage === 'pins'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/pins`)}>Enter pins</Pagination.Item>
-                            <Pagination.Item active={activePage === 'stats'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/stats`)}>Pin stats</Pagination.Item>
+                            <Pagination.Item active={activePage === 'pins'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/pins/edit`)}>Pins</Pagination.Item>
                             <Pagination.Item active={activePage === 'rulings'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/rulings`)}>Rulings</Pagination.Item>
-                            <Pagination.Item active={activePage === 'draw'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/draw`)}>Draw</Pagination.Item>
                             <Pagination.Item active={activePage === 'timesheet'} onClick={(e) => navigate(`/events/${eventId}/round/${round}/timesheet`)}>Timesheet</Pagination.Item>
                         </Pagination>
 

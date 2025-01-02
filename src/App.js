@@ -13,11 +13,13 @@ import { HoleHistory } from './components/HoleHistory';
 import { Login, loader as loginLoader } from './components/Login';
 import { Pins } from './components/Pins';
 import { Round } from './components/Round';
-import { RoundDraw } from './components/RoundDraw';
 import { RoundPins } from './components/RoundPins';
-import { RoundStats } from './components/RoundStats';
+import { RoundPinsEdit } from './components/RoundPinsEdit';
+import { RoundPinsStats } from './components/RoundPinsStats';
 import { RoundRulings } from './components/RoundRulings';
 import { RoundTimesheet } from './components/RoundTimesheet';
+import { RoundTimesheetDraw } from './components/RoundTimesheetDraw';
+import { RoundTimesheetEdit } from './components/RoundTimesheetEdit';
 import { UserList } from './components/UserList';
 import { Welcome } from './components/Welcome';
 
@@ -95,17 +97,28 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Navigate to="pins" replace />,
+                element: <Navigate to="pins/edit" replace />,
               },
               {
                 path: "pins",
                 element: <RoundPins />,
                 loader: async ({ request }) => await requireAuth(request),
-              },
-              {
-                path: "stats",
-                element: <RoundStats />,
-                loader: async ({ request }) => await requireAuth(request),
+                children: [
+                  {
+                    index: true,
+                    element: <Navigate to="edit" replace />,
+                  },
+                  {
+                    path: "edit",
+                    element: <RoundPinsEdit />,
+                    loader: async ({ request }) => await requireAuth(request),
+                  },
+                  {
+                    path: "stats",
+                    element: <RoundPinsStats />,
+                    loader: async ({ request }) => await requireAuth(request),
+                  },
+                ]
               },
               {
                 path: "rulings",
@@ -113,14 +126,25 @@ const router = createBrowserRouter([
                 loader: async ({ request }) => await requireAuth(request),
               },
               {
-                path: "draw",
-                element: <RoundDraw />,
-                loader: async ({ request }) => await requireAuth(request),
-              },
-              {
                 path: "timesheet",
                 element: <RoundTimesheet />,
                 loader: async ({ request }) => await requireAuth(request),
+                children: [
+                  {
+                    index: true,
+                    element: <Navigate to="edit" replace />,
+                  },
+                  {
+                    path: "edit",
+                    element: <RoundTimesheetEdit />,
+                    loader: async ({ request }) => await requireAuth(request),
+                  },
+                  {
+                    path: "draw",
+                    element: <RoundTimesheetDraw />,
+                    loader: async ({ request }) => await requireAuth(request),
+                  },
+                ]
               },
               // {
               //   path: "timesheet/draw/:drawId/group/:groupNumber",

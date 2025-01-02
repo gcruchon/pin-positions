@@ -132,7 +132,7 @@ export const HoleHistory = () => {
 
   const backUrl = hash === "#fromPins"
     ? `/events/${eventId}/pins#hole_${hole}`
-    : `/events/${eventId}/round/${round}`;
+    : `/events/${eventId}/round/${round}/pins/edit`;
 
 
   useEffect(() => {
